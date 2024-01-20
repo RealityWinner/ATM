@@ -8,7 +8,6 @@ Accurate Threat Meter - A locally calculated threat meter with API sync for real
   * Global threat events (healing, buffing, power gains)
   * Direct threat events per target (damage, debuffs)
 * Transmit threat modifiers (talents, gear, enchants, runes, spell ranks) on joining group or change or on request
-* Assume max rank of unknown spell level abilities (buffs, debuffs)
 * Sync against threat API (this event arrives out of order and is ignored if the player has generated threat that frame)
 
 
@@ -29,7 +28,7 @@ Accurate Threat Meter - A locally calculated threat meter with API sync for real
     * Ranged white damage by all players
 
 * SPELL_CAST_SUCCESS
-    * Tracking casts by other players (sunder armor)
+    * Tracking casts by players (sunder armor)
 * SPELL_MISSED
     * Track spell misses (sunder armor)
 
@@ -112,7 +111,6 @@ player:wipeThreat()
 
 * UI
     - always show tank in top 3
-    - highest raw threat, self if higher or tank, tank if lower, normal sorting
     - color border of frame for stoplight system
     - identify tanks based on tank stances
 
@@ -124,26 +122,23 @@ player:wipeThreat()
 * combat
     - update combat scanning code and events that set +combat for enemies
     - set threat to 0 when entering combat with an enemy
-* rewrite talent code to by more dynamic
+* rewrite talent code to be more dynamic
+    - transmit threatBuffs table
 * track global threat added between api updates
     - store global threat split mod per player/enemy
     - you can have multiple different values per enemy
 * garbage collection
     - track last seen of Players and NPCs for garbage collection
     - test garbage collection (weak vs strong tables)
-* track pet/npc threat (hunter pets, random NPCs, Razuvious)
-    - only damage threat for now
-* rewrite Tranq totem code
-
-* longer term for supporting friendly creatures
-    - need generic Unit class that supports being a Player or Creature
+* rewrite away from Players and NPCs to generic Units
+    - track pet/npc threat (hunter pets, random NPCs, Razuvious)
     - supports switching between friendly and enemy (mind control)
+* rewrite Tranq totem code
+* track threat generation rate of targets for stoplight system
+    - cpu usage style system TPS over last 30 seconds, 10 seconds, 2 seconds (average, cds, burst)
+    - updating every CLEU w/ 1s throttling? recording median and max for each
 
 documentation
 * update README
 * threat explanation page
 * UI
-
-* track threat generation rate of targets for stoplight system
-    - cpu usage style system TPS over last 30 seconds, 10 seconds, 2 seconds (average, cds, burst)
-    - updating every CLEU w/ 1s throttling? recording median and max for each
