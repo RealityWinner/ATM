@@ -16,11 +16,14 @@
 
     <!-- ATM -->
     <Script file="ATM.lua"/>
+    <Script file="Handlers.lua"/>
+    <Script file="Spells.lua"/>
     
     <Script file="NPC.lua"/>
     <Script file="Player.lua"/>
-    <Script file="CombatLogger.lua"/>
+    <Script file="Unit.lua"/>
 
+    <Script file="CombatLogger.lua"/>
     <Script file="UI.lua"/>
 
 	<!-- Classes -->
@@ -35,12 +38,5 @@
     <Script file="Classes\Warrior.lua"/>
 
 	<!-- Enemies -->
-    <Script file="NPCs\Onyxia.lua"/>
-    <Script file="NPCs\MoltenCore.lua"/>
-    <Script file="NPCs\BlackwingLair.lua"/>
-    <Script file="NPCs\AQ40.lua"/>
-    <Script file="NPCs\Naxxramas.lua"/>
-    <Script file="NPCs\WorldBosses.lua"/>
-    <Script file="NPCs\Dungeons.lua"/>
-    <Script file="NPCs\SoD.lua"/>
+    <Script file="NPCs.lua"/>
 </Ui>
