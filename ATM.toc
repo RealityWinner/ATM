@@ -1,0 +1,16 @@
+## Interface: 11303
+## Title: AccurateThreatMeter
+## Notes: A locally calculated threat meter (RealityWinner)
+## Author: RealityWinner
+## Version: 0.01
+## SavedVariables: ATM_Options
+
+## OptionalDeps: LibStub, AceGUI-3.0, AceConfig-3.0, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibThreatClassic2
+## X-Embeds: LibStub, Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibThreatClassic2
+
+## X-Category: Combat
+
+## X-License: 
+## X-Website: https://github.com/RealityWinner/ATM
+
+ATM.xml
