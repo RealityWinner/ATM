@@ -108,11 +108,13 @@ resizeButton:SetScript("OnMouseUp", function(self, button)
 end)
 
 
-for i=1,40 do
+local height = 15
+local limit = 10
+for i=0,(limit-1) do
     local statusbar = CreateFrame("StatusBar", nil, frame)
-    statusbar:SetPoint("TOPLEFT", 4, -20*i)
-    statusbar:SetPoint("TOPRIGHT", -4, -20*i)
-    statusbar:SetHeight(20);
+    statusbar:SetPoint("TOPLEFT", 4, -height*i-20)
+    statusbar:SetPoint("TOPRIGHT", -4, -height*i-20)
+    statusbar:SetHeight(height);
     statusbar:SetStatusBarTexture("Interface\\RaidFrame\\Raid-Bar-Hp-Fill")
     statusbar:GetStatusBarTexture():SetHorizTile(false)
     statusbar:GetStatusBarTexture():SetVertTile(false)
@@ -173,12 +175,12 @@ frame:SetScript("OnHide", function(self)
 end)
 
 frame:SetScript("OnSizeChanged", function(self)
-    local numBars = floor((self:GetHeight()-3) / 20) - 1
+    local numBars = floor((self:GetHeight()-23) / height) - 1
     
     for i=1, numBars do
         self.threatBars[i]:Show()
     end
-    for i=numBars+1, 40 do
+    for i=numBars+1, limit do
         self.threatBars[i]:Hide()
     end
 end)
@@ -242,23 +244,27 @@ frame:SetScript("OnUpdate", function(self, elapsed)
 
                     bar:SetStatusBarColor(0, 0.65, 0)
                     if player._isLocal then
-                        bar:SetStatusBarColor(0.65, 0, 0.65)
-                    end
-                    if isTanking then
-                        bar:SetStatusBarColor(0, 0, 0.65)
+                        bar:SetStatusBarColor(0.65, 0, 0)
+                        if isTanking then
+                            bar:SetStatusBarColor(0.65, 0, 0.65)
+                        end
+                    else
+                        if isTanking then
+                            bar:SetStatusBarColor(0, 0, 0.65)
+                        end
                     end
 
                     bar.name:SetText(player.color..player:getName())
                     bar.threat:SetText(shortenThreat(threatvalue))
 
-                    bar.value:SetText(string.format("%.0f%%", (rawthreatpct or 0)*100))
-                    bar:SetValue((rawthreatpct or 0)*100)
+                    bar.value:SetText(string.format("%.0f%%", (threatpct or 0)*100))
+                    bar:SetValue((threatpct or 0)*100)
                     
                     idx = idx+1
                 end
             end
 
-            for i=idx,40 do
+            for i=idx,limit do
                 local bar = self.threatBars[i]
                 if not bar:IsVisible() then return end
                 bar.name:SetText("")
@@ -267,7 +273,7 @@ frame:SetScript("OnUpdate", function(self, elapsed)
                 bar:SetValue(0)
             end
         else--if not C.debug then
-            for i=1,40 do
+            for i=1,limit do
                 local bar = self.threatBars[i]
                 if not bar:IsVisible() then return end
                 bar.name:SetText("")

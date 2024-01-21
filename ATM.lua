@@ -789,7 +789,7 @@ local function findTank(enemyUnit)
 			return
 		end
 
-		for playerUnit in pairs(self.groupUnits) do
+		for playerUnit in pairs(ATM.groupUnits) do
 			isTanking = UnitDetailedThreatSituation(playerUnit, enemyUnit)
 			if isTanking then
 				enemy.tankGUID = UnitGUID(playerUnit)
@@ -855,6 +855,9 @@ function ATM:UnitDetailedThreatSituation(sourceUnit, destUnit)
 				rawthreatpct = threatvalue / tankThreat
 				threatpct = rawthreatpct * pullMultiplier
 			end
+		if threatvalue == 0 then
+			rawthreatpct = 0
+			threatpct = 0
 		end
 	end
 
