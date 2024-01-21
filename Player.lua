@@ -536,18 +536,23 @@ function Player:UpdateThreat(destUnit)
 	local isTanking, status, threatpct, rawthreatpct, threatvalue = UnitDetailedThreatSituation(selfUnit, destUnit)
 	if threatvalue then
         local enemy = ATM:getEnemy(destGUID)
+        enemy:setCombat(true, true)
+
+        if not enemy or (not enemy.seenAPI and threatvalue == 0) then return end
         if enemy and not enemy.seenAPI and threatvalue > 0 then
+            --TODO: UpdateThreat on all previous threatvalue == 0 players
             enemy.seenAPI = true
         end
-        enemy:setCombat(true, true)
         
-        if isTanking then
-            enemy.tankGUID = self.guid
-        end
+
         
         local newThreat = threatvalue/100
         local oldThreat = self:getThreat(destGUID)
         local mismatch = (newThreat - oldThreat)
+        if isTanking then
+            enemy.tankGUID = self.guid
+            enemy.tankThreat = newThreat
+        end
 
 		--If we have updated our threat the same frame as a threat update ignore API sync
 		--This is required because events are processed in reverse order (combat log events before threat event)

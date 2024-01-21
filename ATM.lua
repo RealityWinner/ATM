@@ -855,6 +855,7 @@ function ATM:UnitDetailedThreatSituation(sourceUnit, destUnit)
 				rawthreatpct = threatvalue / tankThreat
 				threatpct = rawthreatpct * pullMultiplier
 			end
+		end
 		if threatvalue == 0 then
 			rawthreatpct = 0
 			threatpct = 0
