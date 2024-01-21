@@ -858,7 +858,7 @@ function ATM:UnitDetailedThreatSituation(sourceUnit, destUnit)
 		end
 	end
 
-	return isTanking, status, threatpct, rawthreatpct, threatvalue > -1 and threatvalue or nil
+	return isTanking, status, threatpct, rawthreatpct, (threatvalue and threatvalue > -1) and threatvalue or nil
 end
 
 
