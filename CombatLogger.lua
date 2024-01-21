@@ -45,14 +45,14 @@ local COMBATLOG_OBJECT_NONE					= COMBATLOG_OBJECT_NONE					or 0x80000000
 local COMBATLOG_OBJECT_SPECIAL_MASK			= COMBATLOG_OBJECT_SPECIAL_MASK			or 0xFFFF0000
 
 -- Object type constants
-local COMBATLOG_FILTER_ME = ATM.bor(
+local COMBATLOG_FILTER_ME = bit.bor(
 						COMBATLOG_OBJECT_AFFILIATION_MINE,
 						COMBATLOG_OBJECT_REACTION_FRIENDLY,
 						COMBATLOG_OBJECT_CONTROL_PLAYER,
 						COMBATLOG_OBJECT_TYPE_PLAYER
 						)
 
-local COMBATLOG_FILTER_MINE = ATM.bor(
+local COMBATLOG_FILTER_MINE = bit.bor(
 						COMBATLOG_OBJECT_AFFILIATION_MINE,
 						COMBATLOG_OBJECT_REACTION_FRIENDLY,
 						COMBATLOG_OBJECT_CONTROL_PLAYER,
@@ -60,7 +60,7 @@ local COMBATLOG_FILTER_MINE = ATM.bor(
 						COMBATLOG_OBJECT_TYPE_OBJECT
 						)
 
-local COMBATLOG_FILTER_MY_PET = ATM.bor(
+local COMBATLOG_FILTER_MY_PET = bit.bor(
 						COMBATLOG_OBJECT_AFFILIATION_MINE,
 						COMBATLOG_OBJECT_REACTION_FRIENDLY,
 						COMBATLOG_OBJECT_CONTROL_PLAYER,
@@ -68,7 +68,7 @@ local COMBATLOG_FILTER_MY_PET = ATM.bor(
 						COMBATLOG_OBJECT_TYPE_PET
 						)
 
-local COMBATLOG_FILTER_FRIENDLY_UNITS = ATM.bor(
+local COMBATLOG_FILTER_FRIENDLY_UNITS = bit.bor(
 						COMBATLOG_OBJECT_AFFILIATION_PARTY,
 						COMBATLOG_OBJECT_AFFILIATION_RAID,
 						COMBATLOG_OBJECT_AFFILIATION_OUTSIDER,
@@ -82,7 +82,7 @@ local COMBATLOG_FILTER_FRIENDLY_UNITS = ATM.bor(
 						COMBATLOG_OBJECT_TYPE_OBJECT
 						)
 
-local COMBATLOG_FILTER_HOSTILE_UNITS = ATM.bor(
+local COMBATLOG_FILTER_HOSTILE_UNITS = bit.bor(
 						COMBATLOG_OBJECT_AFFILIATION_PARTY,
 						COMBATLOG_OBJECT_AFFILIATION_RAID,
 						COMBATLOG_OBJECT_AFFILIATION_OUTSIDER,
@@ -97,7 +97,7 @@ local COMBATLOG_FILTER_HOSTILE_UNITS = ATM.bor(
 						COMBATLOG_OBJECT_TYPE_OBJECT
 						)
 
-local COMBATLOG_FILTER_NEUTRAL_UNITS = ATM.bor(
+local COMBATLOG_FILTER_NEUTRAL_UNITS = bit.bor(
 						COMBATLOG_OBJECT_AFFILIATION_PARTY,
 						COMBATLOG_OBJECT_AFFILIATION_RAID,
 						COMBATLOG_OBJECT_AFFILIATION_OUTSIDER,
@@ -174,10 +174,10 @@ end
 
 
 function CombatLogger:COMBAT_LOG_EVENT_UNFILTERED(...)
-	local timestamp, subevent, _, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _, _, spellName = ...
+	local timestamp, subevent, _, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _, _, spellName, spellID = ...
 	-- print(timestamp, subevent, sourceName, destName, spellName)
 	if C.debug and type(spellName) ~= 'string' then
-		spellName = L[6603] or "Melee"
+		spellName = "Melee"
 	end
 
 	-- Ignored events
@@ -185,9 +185,9 @@ function CombatLogger:COMBAT_LOG_EVENT_UNFILTERED(...)
 		return
 	end
 
-	if ATM.band(sourceFlags, COMBATLOG_OBJECT_TYPE_PLAYER) > 0 then
+	if bit.band(sourceFlags, COMBATLOG_OBJECT_TYPE_PLAYER) > 0 then
 		-- Ignore self and PVP damage
-		if ATM.band(destFlags, COMBATLOG_OBJECT_TYPE_PLAYER) > 0 and ATM.ends_with(subevent, "_DAMAGE") then
+		if bit.band(destFlags, COMBATLOG_OBJECT_TYPE_PLAYER) > 0 and ATM.ends_with(subevent, "_DAMAGE") then
 			return
 		end
 
@@ -197,7 +197,7 @@ function CombatLogger:COMBAT_LOG_EVENT_UNFILTERED(...)
 			player.currentEvent = "["..player.color..player.name.."|r] "..tostring(spellName)
 		end
 
-		local spellData = player.spells[spellName]
+		local spellData = ATM.spells[spellID]
 		if spellData then
 			if spellData.handler then
 				return spellData.handler(player, ...)
@@ -213,7 +213,7 @@ function CombatLogger:COMBAT_LOG_EVENT_UNFILTERED(...)
 		end
 	end
 
-	if ATM.band(destFlags, COMBATLOG_OBJECT_TYPE_PLAYER) > 0 and (ATM.ends_with(subevent, "_ENERGIZE") or ATM.starts_with(subevent, "ENCHANT_")) then
+	if bit.band(destFlags, COMBATLOG_OBJECT_TYPE_PLAYER) > 0 and (ATM.ends_with(subevent, "_ENERGIZE") or ATM.starts_with(subevent, "ENCHANT_")) then
 		local player = ATM:getPlayer(destGUID)
 		if not player then return end
 		if C.debug then
@@ -232,12 +232,12 @@ function CombatLogger:COMBAT_LOG_EVENT_UNFILTERED(...)
 	end
 
 
-	if ATM.band(sourceFlags, COMBATLOG_OBJECT_TYPE_NPC) > 0 then
+	if bit.band(sourceFlags, COMBATLOG_OBJECT_TYPE_NPC) > 0 then
 		local enemy = ATM:getEnemy(sourceGUID)
 		if not enemy then return end
 
 		-- Any actions towards a player will be considered hostile (AMERICCAAAAAAA)
-		if ATM.band(destFlags, COMBATLOG_OBJECT_TYPE_PLAYER) > 0 and not ATM.starts_with(subevent, "SPELL_AURA_") then
+		if bit.band(destFlags, COMBATLOG_OBJECT_TYPE_PLAYER) > 0 and not ATM.starts_with(subevent, "SPELL_AURA_") then
 			enemy:setCombat(true)
 		end
 		
@@ -250,7 +250,7 @@ function CombatLogger:COMBAT_LOG_EVENT_UNFILTERED(...)
 
 	if subevent == "UNIT_DIED" then
 		-- Wipe player threat if they died
-		if ATM.band(destFlags, COMBATLOG_OBJECT_TYPE_PLAYER) > 0 then
+		if bit.band(destFlags, COMBATLOG_OBJECT_TYPE_PLAYER) > 0 then
 			local player = ATM:getPlayer(destGUID)
 			if player then
 				player:setCombat(false)
@@ -258,7 +258,7 @@ function CombatLogger:COMBAT_LOG_EVENT_UNFILTERED(...)
 			return
 		end
 		
-		if ATM.band(destFlags, COMBATLOG_OBJECT_TYPE_NPC) > 0 then
+		if bit.band(destFlags, COMBATLOG_OBJECT_TYPE_NPC) > 0 then
 			-- when a mob dies mark as dead for future GC when OOC
 			ATM:MarkDead(timestamp, destGUID)
 			return

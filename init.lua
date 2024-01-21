@@ -32,6 +32,3 @@ function ATM.toTrue(tbl)
 	end
 	return out
 end
-
-ATM.band = _G.bit.band
-ATM.bor  = _G.bit.bor

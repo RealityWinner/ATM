@@ -79,7 +79,7 @@ ATM.TemporaryThreat = function(self, ...)
     local subevent = select(2, ...)
     local spellID = select(12, ...)
     
-    local threat = ATM.spellThreat[spellID]
+    local threat = ATM.spells[spellID].threat
     if type(threat) == "function" then
         threat = threat(self)
     end
@@ -512,8 +512,8 @@ function Player:SPELL_CAST_SUCCESS(...)
         local timestamp, subevent, spellSchool, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _ = ...
         -- ATM:print("SPELL_CAST_SUCCESS", timestamp, spellName)
 
-        local threat = ATM.spellThreat[spellID] * self.threatBuffs[spellSchool]
-        if ATM.band(destFlags, COMBATLOG_OBJECT_TYPE_PLAYER) > 0 then
+        local threat = ATM.spells[spellID].threat * self.threatBuffs[spellSchool]
+        if bit.band(destFlags, COMBATLOG_OBJECT_TYPE_PLAYER) > 0 then
             self:addThreat(threat)
         else
             local enemy = ATM:getEnemy(destGUID)
@@ -537,8 +537,8 @@ function Player:SPELL_MISSED(...)
 
     local spellData = self.spells[spellName]
     if spellData and spellData.type == "CAST" then
-        local threat = ATM.spellThreat[spellID]
-        if ATM.band(destFlags, COMBATLOG_OBJECT_TYPE_PLAYER) > 0 then
+        local threat = ATM.spells[spellID].threat
+        if bit.band(destFlags, COMBATLOG_OBJECT_TYPE_PLAYER) > 0 then
             self:addThreat(-threat) --can this happen?
         else
             self:addThreat(-threat, destGUID)
@@ -605,7 +605,7 @@ function Player:SPELL_DAMAGE(...)
         end
 
         if not spellData.type or spellData.type ~= "DEBUFF" then
-            threat = threat + (ATM.spellThreat[spellID] or 0)
+            threat = threat + (spellData.threat or 0)
         end
     end
     
@@ -632,7 +632,7 @@ function Player:SPELL_HEAL(...)
 	local timestamp, subevent, _, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _, spellID, spellName, spellSchool, amount, overhealing, absorbed, critical = ...
 
     -- Only care about healing done to Players (TODO: support pets/friendlies)
-    if ATM.band(destFlags, COMBATLOG_OBJECT_TYPE_PLAYER) == 0 then
+    if bit.band(destFlags, COMBATLOG_OBJECT_TYPE_PLAYER) == 0 then
         return
     end
 
@@ -702,7 +702,7 @@ function Player:AURA_THREAT(...)
 	local timestamp, subevent, _, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags = ...
     local spellID, spellName, spellSchool, auraType, amount = select(12, ...)
 
-    local spellData = self.spells[spellName]
+    local spellData = ATM.spells[spellID]
 
     -- If this ability doesn't generate threat just ignore
     if not spellData or spellData.type == "DAMAGE" or spellData.type == "CAST" then
@@ -710,17 +710,17 @@ function Player:AURA_THREAT(...)
     end
 
     local enemy = ATM:getEnemy(destGUID)
-    if spellData.type == "CC" and ATM.band(destFlags, COMBATLOG_OBJECT_TYPE_NPC) > 0 then
+    if spellData.type == "CC" and bit.band(destFlags, COMBATLOG_OBJECT_TYPE_NPC) > 0 then
         enemy:setCC(spellName, true)
     end
     if spellData.ignored then return end
     
-    if auraType == "DEBUFF" and ATM.band(destFlags, COMBATLOG_OBJECT_TYPE_NPC) > 0 then
+    if auraType == "DEBUFF" and bit.band(destFlags, COMBATLOG_OBJECT_TYPE_NPC) > 0 then
         enemy:setCombat(true)
     end
 
 
-    local threat = ATM.spellThreat[spellID]
+    local threat = spellData.threat
     if not threat then return end
 
     -- ATM:print("AURA_THREAT", spellName, spellID)
@@ -744,7 +744,7 @@ function Player:AURA_THREAT(...)
 
     if threat then
         if auraType == "BUFF" then
-            if ATM.band(destFlags, COMBATLOG_OBJECT_TYPE_PLAYER) > 0 then
+            if bit.band(destFlags, COMBATLOG_OBJECT_TYPE_PLAYER) > 0 then
                 self:setCombat(ATM:getPlayer(destGUID):getCombat())
             end
             self:addThreat(threat)
@@ -765,7 +765,7 @@ function Player:SPELL_AURA_REMOVED(...)
     local spellData = self.spells[spellName]
     if not spellData or spellData.type ~= "CC" then return end
     
-    if ATM.band(destFlags, COMBATLOG_OBJECT_TYPE_NPC) > 0 then
+    if bit.band(destFlags, COMBATLOG_OBJECT_TYPE_NPC) > 0 then
         local enemy = ATM:getEnemy(destGUID)
         enemy:setCC(spellName, false)
         enemy.lastThreatUpdate = ATM:GetTime() --ignore threat updates while still CC'd

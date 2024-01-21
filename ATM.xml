@@ -12,15 +12,16 @@
 	<!-- Init -->
 	<Script file="init.lua"/>
 	<Script file="Config.lua"/>
-	<Script file="Localization.lua"/>
 
     <!-- ATM -->
     <Script file="ATM.lua"/>
     <Script file="Handlers.lua"/>
-    <Script file="Spells.lua"/>
+
     
     <Script file="NPC.lua"/>
+    <Script file="NPC_Spells.lua"/>
     <Script file="Player.lua"/>
+    <Script file="Player_Spells.lua"/>
     <Script file="Unit.lua"/>
 
     <Script file="CombatLogger.lua"/>
@@ -36,7 +37,4 @@
     <Script file="Classes\Shaman.lua"/>
     <Script file="Classes\Warlock.lua"/>
     <Script file="Classes\Warrior.lua"/>
-
-	<!-- Enemies -->
-    <Script file="NPCs.lua"/>
 </Ui>

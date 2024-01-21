@@ -64,7 +64,7 @@ function ATM:Dispel(...)
     local _, subevent, spellSchool, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _ = ...
     local spellID, spellName = select(12, ...)
     if subevent == "SPELL_CAST_SUCCESS" then
-        local threat = ATM.spellThreat[spellID] * self.threatBuffs[spellSchool]
+        local threat = ATM.spells[spellID].threat * self.threatBuffs[spellSchool]
         self:addThreat(threat)
 
         local enemy = ATM:getEnemy(destGUID)
