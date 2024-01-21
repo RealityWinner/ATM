@@ -25,10 +25,6 @@ function prototype:scanTalents()
     self.shadowMod = 1 - ({0.00, 0.08, 0.16, 0.25})[self:GetTalent(3, 3) + 1]
 end
 
-function prototype:classThreatModifier()
-    return 1.0
-end
-
 function prototype:shadowAffinity()
     return self.shadowMod
 end

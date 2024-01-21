@@ -18,11 +18,11 @@
     <Script file="Handlers.lua"/>
 
     
+    <Script file="Unit.lua"/>
     <Script file="NPC.lua"/>
     <Script file="NPC_Spells.lua"/>
     <Script file="Player.lua"/>
     <Script file="Player_Spells.lua"/>
-    <Script file="Unit.lua"/>
 
     <Script file="CombatLogger.lua"/>
     <Script file="UI.lua"/>

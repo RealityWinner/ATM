@@ -17,10 +17,6 @@ function prototype:scanTalents()
     self.enhancingTotems = 1.0 + ({0, 0.8, 0.15})[self:GetTalent(2, 7)+1]
 end
 
-function prototype:classThreatModifier()
-    return 1.0
-end
-
 --[[ Rockbiter handlers ]]
 local rbThreat = {
     6,

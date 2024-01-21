@@ -21,10 +21,6 @@ function prototype:scanTalents()
     self.threatBuffs[4]  = 1 - 0.15 * self:GetTalent(2, 9)
 end
 
-function prototype:classThreatModifier()
-    return 1.0
-end
-
 prototype.spells = {
     
     --ARCANE SPELLS

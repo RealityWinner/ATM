@@ -46,10 +46,6 @@ function prototype:SPELL_AURA_REMOVED(...)
     ATM.Player.SPELL_AURA_REMOVED(self, ...) --call original handler
 end
 
-function prototype:classThreatModifier()
-    return 1.0
-end
-
 prototype.spells = {
     ["Blessing of Freedom"] = {
         ranks = {

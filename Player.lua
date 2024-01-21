@@ -62,46 +62,14 @@ function ATM:newPlayer(playerGUID)
 end
 
 
-ATM.BuffThreatMod = function(threatMod)
-    return function(self, ...)
-        local subevent = select(2, ...)
-        local spellID, spellName = select(12, ...)
-        if subevent == "SPELL_AURA_APPLIED" then
-            self.threatBuffs[spellName] = threatMod
-        end
-        if subevent == "SPELL_AURA_REMOVED" then
-            self.threatBuffs[spellName] = nil
-        end
-    end
-end
 
-ATM.TemporaryThreat = function(self, ...)
-    local subevent = select(2, ...)
-    local spellID = select(12, ...)
-    
-    local threat = ATM.spells[spellID].threat
-    if type(threat) == "function" then
-        threat = threat(self)
-    end
-    if not threat then return end
-
-    --TODO: reduce to 0, add back amount reduced when expired
-    if subevent == "SPELL_AURA_APPLIED" then
-        self:addThreat(threat)
-    elseif subevent == "SPELL_AURA_REMOVED" then
-        self:addThreat(-threat)
-    end
-end
-
-
-
-local Player = {
+local Player = CreateFromMixins(ATM.Unit, {
     color = "",
     inCombat = false,
     _isLocal = false,
     _equipment = {},
     _talents = {},
-}
+})
 
 
 function Player:init()
@@ -335,7 +303,7 @@ function Player:getThreat(enemyGUID, skipCreate)
 end
 
 function Player:addThreat(amount, enemyGUID)
-    amount = amount * self:classThreatModifier()
+    amount = amount
     if C.debug then
         ATM:print(self.currentEvent.." T:"..tostring(amount).." E:"..(enemyGUID or "GLOBAL"))
     end
@@ -494,9 +462,6 @@ end
 
 -- Classes should override these
 function Player:scanTalents() end
-function Player:classThreatModifier()
-    return 1.0
-end
 
 ATM.Player = Player
 

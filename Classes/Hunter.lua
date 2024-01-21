@@ -12,10 +12,6 @@ function prototype:scanTalents()
     -- ATM:print("HUNTER:scanTalents")
 end
 
-function prototype:classThreatModifier()
-    return 1.0
-end
-
 prototype.spells = {
     ["Distracting Shot"] = {
         ranks = {

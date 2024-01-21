@@ -6,7 +6,6 @@ local prototype = {
     class = "WARRIOR",
 
     -- Stances
-    stanceMod = 0.8, --Assume Berserker/Battle
     defianceMod = 1.0
 }
 prototype.color = "|c"..RAID_CLASS_COLORS[prototype.class].colorStr
@@ -18,27 +17,12 @@ function prototype:scanTalents()
     if newDefiance ~= self.defianceMod then self.talentsTime = GetServerTime(); ATM:TransmitSelf() end
     self.defianceMod = newDefiance
 
-    if self._isLocal then
-        local newStance = 1.0
-
-        local _, _, _, spellID = GetShapeshiftFormInfo(GetShapeshiftForm())
-        if spellID == 2457 or spellID == 2458 then --Battle/Berserker Stance
-            newStance = 0.8
-        elseif spellID == 71 then --Defensive Stance
-            newStance = 1.3 * self.defianceMod
-        end
-
-        if newStance ~= self.stanceMod then self.classTime = GetServerTime(); ATM:TransmitSelf() end
-        self.stanceMod = newStance
+    if not rawget(self.threatBuffs, "Stance") then
+        self.threatBuffs["Stance"] = {[127] = 0.8}
     end
 end
 
-function prototype:classThreatModifier()
-    return 1.0 * self.stanceMod
-end
-
 prototype.classFields = ATM.toTrue({
-    'stanceMod'
 })
 
 
@@ -46,11 +30,11 @@ function prototype:SPELL_AURA_APPLIED(...)
     local spellID, spellName = select(12, ...)
     if 2457 == spellID or 2458 == spellID or 23397 == spellID then --Battle/Berserker Stance
         ATM:print("[+]", self.name, "STANCE Battle/Berserk")
-        self.stanceMod = 0.8
+        self.threatBuffs["Stance"] = {[127] = 0.8}
         return
     elseif 71 == spellID then --Defensive Stance
         ATM:print("[+]", self.name, "STANCE Defensive")
-        self.stanceMod = 1.3 * self.defianceMod
+        self.threatBuffs["Stance"] = {[127] = 1.3 * self.defianceMod}
         return
     end
     

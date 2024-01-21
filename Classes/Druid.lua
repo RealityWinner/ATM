@@ -5,9 +5,6 @@ local ATM, C, L, _ = unpack(select(2, ...))
 local prototype = {
     class = "DRUID",
 
-    --Stances (forms)
-    stanceMod = 1.0,
-
     --Talents
     feralinstinctMod = 0.0,
     subtletyMod = 1.0,
@@ -30,35 +27,17 @@ function prototype:scanTalents()
     local newTranqMod = 0.5 * self:GetTalent(3, 13)
     if newTranqMod ~= self.tranqMod then self.talentsTime = GetServerTime(); ATM:TransmitSelf() end
     self.tranqMod = newTranqMod
-
-
-    --Update our stanceMod as it can change based on talents
-    if self._isLocal then
-        local newStanceMod = 1.0
-        local idx = GetShapeshiftForm()
-        if idx ~= 0 then
-            local _, _, _, spellID = GetShapeshiftFormInfo(idx)
-            if spellID == 5487 or spellID == 9634 then --Bear Forms
-                newStanceMod = 1.3 + self.feralinstinctMod
-            elseif spellID == 768 then -- Cat form
-                newStanceMod = 0.71
-            end
-        end
-
-        if newStanceMod ~= self.stanceMod then self.classTime = GetServerTime(); ATM:TransmitSelf() end
-        self.stanceMod = newStanceMod
-    end
 end
 
 function prototype:SPELL_AURA_APPLIED(...)
     local spellID, spellName = select(12, ...)
     if 5487 == spellID or 9634 == spellID then --Bear Forms
         ATM:print("[+]", self.name, "STANCE Bear")
-        self.stanceMod = 1.3 + self.feralinstinctMod
+        self.threatBuffs["Form"] = {[127] = 1.3 + self.feralinstinctMod}
         return
     elseif 768 == spellID or 23398 == spellID then --Cat Form
         ATM:print("[+]", self.name, "STANCE Cat")
-        self.stanceMod = 0.71
+        self.threatBuffs["Form"] = {[127] = 0.71}
         return
     end
     
@@ -69,7 +48,7 @@ function prototype:SPELL_AURA_REMOVED(...)
     local spellID, spellName = select(12, ...)
     if 5487 == spellID or 9634 == spellID or 768 == spellID or 23398 == spellID then --Bear and Cat forms
         ATM:print("[+]", self.name, "STANCE Human")
-        self.stanceMod = 1.0
+        self.threatBuffs["Form"] = nil
         return
     end
     
@@ -85,12 +64,7 @@ function prototype:getSubtletyMod()
     return self.subtletyMod
 end
 
-function prototype:classThreatModifier()
-    return 1.0 * self.stanceMod
-end
-
 prototype.classFields = ATM.toTrue({
-    'stanceMod'
 })
 
 prototype.spells = {

@@ -73,3 +73,34 @@ function ATM:Dispel(...)
         end
     end
 end
+
+ATM.TemporaryThreat = function(self, ...)
+    local subevent = select(2, ...)
+    local spellID = select(12, ...)
+    
+    local threat = ATM.spells[spellID].threat
+    if type(threat) == "function" then
+        threat = threat(self)
+    end
+    if not threat then return end
+
+    --TODO: reduce to 0, add back amount reduced when expired
+    if subevent == "SPELL_AURA_APPLIED" then
+        self:addThreat(threat)
+    elseif subevent == "SPELL_AURA_REMOVED" then
+        self:addThreat(-threat)
+    end
+end
+
+ATM.BuffThreatMod = function(threatMod)
+    return function(self, ...)
+        local subevent = select(2, ...)
+        local spellID, spellName = select(12, ...)
+        if subevent == "SPELL_AURA_APPLIED" then
+            self.threatBuffs[spellName] = threatMod
+        end
+        if subevent == "SPELL_AURA_REMOVED" then
+            self.threatBuffs[spellName] = nil
+        end
+    end
+end

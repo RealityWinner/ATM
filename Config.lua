@@ -9,12 +9,9 @@ C.VERSION = 1
 C.MINVER = 1
 
 C.debug = false
-C.enabled = true
+C.enabled = false
 
 C.UIInterval = 0.1
-
-C.castLatency = 0.1
-C.combatLatency = 0.5
 
 -- NPC must be out of combat for x seconds before we wipe threat after we called enemy:setCombat(false)
 C.npcCombatDropTime = 0.5

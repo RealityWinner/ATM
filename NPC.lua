@@ -4,8 +4,7 @@ local ATM, C, L, _ = unpack(select(2, ...))
 
 ATM.NPCs = {}
 
-
-local NPC = {
+local NPC = CreateFromMixins(ATM.Unit, {
     ID = 0,
     GUID = "",
     subGUID = "",
@@ -15,7 +14,7 @@ local NPC = {
     ccDebuffs = {},
     unit = nil,
     name = nil,
-}
+})
 
 function NPC:getID()
     return self.ID
