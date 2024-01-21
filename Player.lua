@@ -303,16 +303,8 @@ function Player:getThreat(enemyGUID, skipCreate)
 end
 
 function Player:addThreat(amount, enemyGUID)
-    amount = amount
     if C.debug then
         ATM:print(self.currentEvent.." T:"..tostring(amount).." E:"..(enemyGUID or "GLOBAL"))
-    end
-    self:_addThreat(amount, enemyGUID)
-end
-
-function Player:addRawThreat(amount, enemyGUID)
-    if C.debug then
-        ATM:print(self.currentEvent.." M:RAW T:"..tostring(amount).." E:"..(enemyGUID or "GLOBAL"))
     end
     self:_addThreat(amount, enemyGUID)
 end
@@ -649,15 +641,15 @@ function Player:SPELL_ENERGIZE(...)
     -- print("SPELL_ENERGIZE", spellID, spellName, spellSchool, amount, powerType)
 
     if powerType == ATM.PowerType.Mana then
-        self:addRawThreat(amount * 0.5)
+        self:addThreat(amount * 0.5)
     elseif powerType == ATM.PowerType.Rage then
         if spellID == 29131 then --bloodrage ticks
             self:addThreat(amount * 5.0 * self.threatBuffs[spellSchool])
         else
-            self:addRawThreat(amount * 5.0)
+            self:addThreat(amount * 5.0)
         end
     elseif powerType == ATM.PowerType.Energy then
-        self:addRawThreat(amount * 5.0)
+        self:addThreat(amount * 5.0)
     end
 end
 Player.SPELL_PERIODIC_ENERGIZE = Player.SPELL_ENERGIZE
