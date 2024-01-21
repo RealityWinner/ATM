@@ -233,6 +233,7 @@ setmetatable(ATM._enemies, {
 });
 
 function ATM:getEnemy(enemyGUID, skipCreate)
+    if not enemyGUID then return end
     local enemy
     if skipCreate then
         enemy = rawget(self._enemies, enemyGUID)

@@ -84,7 +84,7 @@ frame:SetClampedToScreen(true)
 frame:SetPoint("CENTER");
 frame:SetWidth(200);
 frame:SetHeight(200);
-frame:SetResizeBounds(100,100);
+frame:SetResizeBounds(200,100, 500,500);
 frame:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background", 
                     edgeFile = "Interface/Tooltips/UI-Tooltip-Border", 
                     tile = true, tileSize = 16, edgeSize = 16, 
@@ -109,7 +109,7 @@ end)
 
 
 local height = 15
-local limit = 10
+local limit = 30
 for i=0,(limit-1) do
     local statusbar = CreateFrame("StatusBar", nil, frame)
     statusbar:SetPoint("TOPLEFT", 4, -height*i-20)
@@ -134,15 +134,16 @@ for i=0,(limit-1) do
     statusbar.name:SetJustifyH("LEFT")
     statusbar.name:SetShadowOffset(1, -1)
     statusbar.name:SetTextColor(0, 1, 0)
-    statusbar.name:SetText("Nuzzles")
+    statusbar.name:SetText("ATM "..i)
 
     statusbar.value = statusbar:CreateFontString(nil, "OVERLAY")
-    statusbar.value:SetPoint("CENTER", statusbar, "CENTER", 20, 0)
+    statusbar.value:SetPoint("CENTER", statusbar, "CENTER", 0, 0)
     statusbar.value:SetFont("Interface\\Addons\\ATM\\Fonts\\FreeSansBold.TTF", 14, "OUTLINE")
-    statusbar.value:SetJustifyH("CENTER")
+    statusbar.value:SetJustifyH("RIGHT")
     statusbar.value:SetShadowOffset(1, -1)
     statusbar.value:SetTextColor(0, 1, 0)
-    statusbar.value:SetText("100%")
+    statusbar.value:SetText(string.format("%.0f%%", i*10))
+    statusbar.value:SetWidth(80)
     
     statusbar.threat = statusbar:CreateFontString(nil, "OVERLAY")
     statusbar.threat:SetPoint("RIGHT", statusbar, "RIGHT", 0, 0)
@@ -150,7 +151,7 @@ for i=0,(limit-1) do
     statusbar.threat:SetJustifyH("RIGHT")
     statusbar.threat:SetShadowOffset(1, -1)
     statusbar.threat:SetTextColor(0, 1, 0)
-    statusbar.threat:SetText(string.format("%.2f", i*1000))
+    statusbar.threat:SetText(string.format("%.2f", i*10))
 
     table.insert(frame.threatBars, statusbar)
 end
@@ -175,7 +176,7 @@ frame:SetScript("OnHide", function(self)
 end)
 
 frame:SetScript("OnSizeChanged", function(self)
-    local numBars = floor((self:GetHeight()-23) / height) - 1
+    local numBars = math.min(floor((self:GetHeight()-(height/2)) / height) - 1, limit)
     
     for i=1, numBars do
         self.threatBars[i]:Show()
@@ -257,6 +258,7 @@ frame:SetScript("OnUpdate", function(self, elapsed)
                     bar.name:SetText(player.color..player:getName())
                     bar.threat:SetText(shortenThreat(threatvalue))
 
+                    if threatpct > 999 then threatpct = 999 end
                     bar.value:SetText(string.format("%.0f%%", (threatpct or 0)*100))
                     bar:SetValue((threatpct or 0)*100)
                     
@@ -272,7 +274,7 @@ frame:SetScript("OnUpdate", function(self, elapsed)
                 bar.threat:SetText("")
                 bar:SetValue(0)
             end
-        else--if not C.debug then
+        elseif not C.debug then
             for i=1,limit do
                 local bar = self.threatBars[i]
                 if not bar:IsVisible() then return end
