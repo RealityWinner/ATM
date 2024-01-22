@@ -213,6 +213,7 @@ local function shortenThreat(threat)
 	end
 end
 
+
 frame.TimeSinceLastUpdate = 0
 frame.isTanking = false
 frame:SetScript("OnUpdate", function(self, elapsed)
@@ -226,46 +227,95 @@ frame:SetScript("OnUpdate", function(self, elapsed)
             unit = "targettarget"
         end
 
-
-        ATM.UI.title:SetText("ATM "..C.DISPLAY)
         if UnitCanAttack("player", unit) then
             ATM.UI.title:SetText("ATM "..C.DISPLAY..": "..UnitName(unit))
             local enemyGUID = UnitGUID(unit)
+            local enemy = ATM:getEnemy(enemyGUID)
+            if not enemy then return end
 
-
-            local idx=1
-            for _,player in orderedPairs(ATM._players, enemyGUID) do
-                local bar = self.threatBars[idx]
-                if not bar then break end
-
+            local idx = 1
+            local tankPos, localPos
+            local function populateBar(bar, player)
                 local playerUnit = ATM:PlayerGUIDToUnit(player.guid)
                 if playerUnit then
-                    local isTanking, status, threatpct, rawthreatpct, threatvalue = ATM:UnitDetailedThreatSituation(playerUnit, unit)
-                    if not threatvalue then break end
+                    local isTanking, status, threatpct, rawthreatpct, threatvalue, pullMultiplier = ATM:UnitDetailedThreatSituation(playerUnit, unit)
+                    if not threatvalue then return end
 
+                    if enemy.meleeOnly and pullMultiplier > 1.2 then return end
+            
                     bar:SetStatusBarColor(0, 0.65, 0)
                     if player._isLocal then
                         bar:SetStatusBarColor(0.65, 0, 0)
-                        if isTanking then
+                        localPos = idx
+                    end
+                    if isTanking then
+                        if player._isLocal then
                             bar:SetStatusBarColor(0.65, 0, 0.65)
-                        end
-                    else
-                        if isTanking then
+                        else
                             bar:SetStatusBarColor(0, 0, 0.65)
                         end
+                        tankPos = idx
                     end
-
+            
                     bar.name:SetText(player.color..player:getName())
                     bar.threat:SetText(shortenThreat(threatvalue))
-
+            
                     if threatpct and threatpct > 1000 then threatpct = 999 end
                     if rawthreatpct and rawthreatpct > 1000 then rawthreatpct = 999 end
                     bar.value:SetText(string.format("%.0f%%", (threatpct or 0)))
                     bar:SetValue((threatpct or 0))
-                    
+                end
+                return true
+            end
+
+            for _,player in orderedPairs(ATM._players, enemyGUID) do
+                local bar = self.threatBars[idx]
+                if not bar or not bar:IsVisible() then break end
+                if populateBar(bar, player) then
                     idx = idx+1
                 end
             end
+
+            --Always show tank
+            if not tankPos then
+                local player = ATM:getTank(unit)
+                if player then
+                    for i=4,limit do
+                        local prevBar = self.threatBars[i-1]
+                        local nextBar = self.threatBars[i]
+                        if not nextBar:IsVisible() then return end
+                        nextBar.name:SetText(prevBar.name:GetText())
+                        nextBar.value:SetText(prevBar.name:GetText())
+                        nextBar.threat:SetText(prevBar.name:GetText())
+                        nextBar:SetValue(prevBar:GetValue())
+                    end
+                    populateBar(self.threatBars[3], player)
+                end
+                tankPos = 3
+            end
+            --Always have tank in top 3
+            if tankPos > 3 then
+                for i=4,tankPos do
+                    local prevBar = self.threatBars[i-1]
+                    local nextBar = self.threatBars[i]
+                    if not nextBar:IsVisible() then return end
+                    nextBar.name:SetText(prevBar.name:GetText())
+                    nextBar.value:SetText(prevBar.name:GetText())
+                    nextBar.threat:SetText(prevBar.name:GetText())
+                    nextBar:SetValue(prevBar:GetValue())
+                end
+                populateBar(self.threatBars[3], ATM:getTank(unit))
+            end
+            --Always show local player
+            if not localPos then
+                for i=1,limit do
+                    local bar = self.threatBars[i]
+                    if not bar:IsVisible() then
+                        populateBar(self.threatBars[i-1], ATM:player())
+                    end
+                end
+            end
+
 
             for i=idx,limit do
                 local bar = self.threatBars[i]
@@ -276,6 +326,7 @@ frame:SetScript("OnUpdate", function(self, elapsed)
                 bar:SetValue(0)
             end
         elseif not C.debug then
+            ATM.UI.title:SetText("ATM "..C.DISPLAY)
             for i=1,limit do
                 local bar = self.threatBars[i]
                 if not bar:IsVisible() then return end
