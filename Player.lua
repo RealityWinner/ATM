@@ -639,6 +639,9 @@ function Player:SPELL_MISSED(...)
     local spellData = self.spells[spellName]
     if spellData and spellData.type == "CAST" then
         local threat = ATM.spellThreat[spellID]
+        if not threat then
+            return print("NIL SPELL THREAT FOR", spellID, spellName, ...)
+        end
         if ATM.band(destFlags, COMBATLOG_OBJECT_TYPE_PLAYER) > 0 then
             self:addThreat(-threat) --can this happen?
         else

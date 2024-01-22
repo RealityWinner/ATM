@@ -844,7 +844,7 @@ function ATM:UnitDetailedThreatSituation(sourceUnit, destUnit)
 	local player = self:getPlayer(UnitGUID(sourceUnit))
 	if enemy and player then
 		threatvalue = player:getThreat(enemyGUID, true)
-		if threatvalue > 0 then
+		if threatvalue and threatvalue > 0 then
 			local tankThreat = enemy.tankThreat
 			if not tankThreat then
 				tankThreat = self._highest[enemyGUID]
@@ -856,7 +856,7 @@ function ATM:UnitDetailedThreatSituation(sourceUnit, destUnit)
 				threatpct = rawthreatpct * pullMultiplier
 			end
 		end
-		if threatvalue == 0 then
+		if threatvalue and threatvalue == 0 then
 			rawthreatpct = 0
 			threatpct = 0
 		end

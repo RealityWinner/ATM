@@ -258,7 +258,8 @@ frame:SetScript("OnUpdate", function(self, elapsed)
                     bar.name:SetText(player.color..player:getName())
                     bar.threat:SetText(shortenThreat(threatvalue))
 
-                    if threatpct > 999 then threatpct = 999 end
+                    if threatpct and threatpct > 999 then threatpct = 999 end
+                    if rawthreatpct and rawthreatpct > 999 then rawthreatpct = 999 end
                     bar.value:SetText(string.format("%.0f%%", (threatpct or 0)*100))
                     bar:SetValue((threatpct or 0)*100)
                     
