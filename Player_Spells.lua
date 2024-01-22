@@ -83,5 +83,8 @@ s[428489] = {
     handler = ATM.TemporaryThreat
 }
 
+--Curse of Vulnerability (Void-Touched mail chest)
+s[427143] = {onDebuff=true, threat=5}
+
 -- Corrupted Salv
 -- s[444444] = {handler = ATM.BuffThreatMod({[127] = 1.425})}
