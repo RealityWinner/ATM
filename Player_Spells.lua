@@ -88,3 +88,11 @@ s[427143] = {onDebuff=true, threat=5}
 
 -- Corrupted Salv
 -- s[444444] = {handler = ATM.BuffThreatMod({[127] = 1.425})}
+
+
+--Target Dummy
+--Spawn Effect 34
+--Normal = 50 every 3
+--Advanced = 100 every 3
+--Masterwork = 350 every 3
+--34,119,203,287, 83.5 every 3s?

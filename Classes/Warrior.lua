@@ -74,6 +74,9 @@ s[20615]  = {isCC=true, threatMod=2.0}
 s[20614]  = {isCC=true, threatMod=2.0}
 s[20253]  = {isCC=true, threatMod=2.0}
 
+--Intimidating Shout
+s[5246]  = {isCC=true} --, onDebuff=true, threat=?
+
 --Battle Shout
 s[25289] = {threat=60}
 s[11551] = {threat=52}
@@ -104,122 +107,77 @@ s[7372] = {threat=2.5*32,threatMod=1.25}
 s[1715] = {threat=2.5*8,threatMod=1.25}
 
 --Shield Slam
+s[23925] = {threat=254}
+s[23924] = {threat=229}
+s[23923] = {threat=203}
+s[23922] = {threat=178}
+
+--Pummel
+s[6554]  = {threat=2 * 58}
+s[6552]  = {threat=2 * 38}
+
+--Overpower
+s[11585] = {threatMod=0.75}
+s[11584] = {threatMod=0.75}
+s[7887]  = {threatMod=0.75}
+s[7384]  = {threatMod=0.75}
+
+--Sunder Armor
+s[11597] = {onCast=true,threatMod=prototype.eightSetMight,threat=4.5 * 58}
+s[11596] = {onCast=true,threatMod=prototype.eightSetMight,threat=4.5 * 46}
+s[8380]  = {onCast=true,threatMod=prototype.eightSetMight,threat=4.5 * 34}
+s[7405]  = {onCast=true,threatMod=prototype.eightSetMight,threat=4.5 * 22}
+s[7386]  = {onCast=true,threatMod=prototype.eightSetMight,threat=4.5 * 10}
+
+--Heroic Strike
+s[25286] = {threat=175}
+s[11567] = {threat=145}
+s[11566] = {threat=118}
+s[11565] = {threat=87}
+s[11564] = {threat=65}
+s[1608]  = {threat=60}
+s[285]   = {threat=42}
+s[284]   = {threat=28}
+s[78]    = {threat=16}
+
+--Cleave
+s[20569] = {threat=1.5*60}
+s[11609] = {threat=1.5*50}
+s[11608] = {threat=1.5*40}
+s[7369]  = {threat=1.5*30}
+s[845]   = {threat=1.5*20}
+
+--Shield Bash
+s[1672]  = {threat=3*52,threatMod=1.5}
+s[1671]  = {threat=3*31,threatMod=1.5}
+s[72]    = {threat=3*12,threatMod=1.5}
+
+--Revenge
+s[25288] = {threat=4.5 * 60,threatMod=2.25}
+s[11601] = {threat=4.5 * 54,threatMod=2.25}
+s[11600] = {threat=4.5 * 44,threatMod=2.25}
+s[7379]  = {threat=4.5 * 34,threatMod=2.25}
+s[6574]  = {threat=4.5 * 24,threatMod=2.25}
+s[6572]  = {threat=4.5 * 14,threatMod=2.25}
+
+--Revenge Stun
+s[12798] = {isCC=true,onDebuff=true,threat=25}
+
+--Execute
+s[26651]  = {threatMod=1.25}
+
+--Mocking Blow
+s[20560]  = {isTaunt=true,threat=2 * 56}
+s[20559]  = {isTaunt=true,threat=2 * 46}
+s[7402]   = {isTaunt=true,threat=2 * 36}
+s[7400]   = {isTaunt=true,threat=2 * 26}
+s[694]    = {isTaunt=true,threat=2 * 16}
+
+--Taunt
+s[355]    = {isTaunt=true,handler=ATM.Taunt}
 
 
-prototype.spells = {
-    ["Shield Slam"] = {
-        ranks = {
-            [23925] = 254,
-            [23924] = 229,
-            [23923] = 203,
-            [23922] = 178,
-        },
-    },
-    ["Pummel"] = {
-        ranks = {
-            [6554] = 120 * (58/60), --CONFIRMED 116
-            [6552] = 120 * (38/60), --CONFIRMED  76
-        },
-    },
-    ["Overpower"] = {
-        ranks = {
-            11585,
-            11584,
-            7887,
-            7384,
-        },
-        threatMod = 0.75,
-    },
-    ["Sunder Armor"] = {
-        ranks = {
-            [11597] = 4.5 * 58, --CONFIRMED 261
-            [11596] = 4.5 * 46,
-             [8380] = 4.5 * 34,
-             [7405] = 4.5 * 22,
-             [7386] = 4.5 * 10, --CONFIRMED 45
-        },
-        threatMod = prototype.eightSetMight,
-        type = "CAST",
-    },
-    ["Heroic Strike"] = {
-        ranks = {
-            [25286] = 175, --AQ 157 dmg
-            [11567] = 145, --CONFIRMED 138 dmg
-            [11566] = 118,
-            [11565] =  87,
-            [11564] =  65,
-             [1608] =  60, --CONFIRMED 44 dmg 24 lvl
-              [285] =  42, --          32 dmg 16 lvl
-              [284] =  28, --CONFIRMED 21 dmg 8 lvl
-               [78] =  16, --CONFIRMED 11 dmg 1 lvl
-        },
-    },
-    ["Cleave"] = {
-        ranks = { --TODO test
-            [20569] = 1.5 * 60, -- 50 dmg
-            [11609] = 1.5 * 50, -- 32 dmg
-            [11608] = 1.5 * 40, -- 18 dmg
-             [7369] = 1.5 * 30, -- 10 dmg
-              [845] = 1.5 * 20, -- CONFIRMED  5 dmg
-        },
-    },
 
-    ["Shield Bash"] = {
-        ranks = {
-            [1672] = 3 * 52,
-            [1671] = 3 * 31, --CONFIRMED 93 (TODO: this should be 96?)
-              [72] = 3 * 12, --CONFIRMED 36
-        },
-        threatMod = 1.5,
-    },
-    ["Revenge"] = {
-        ranks = {
-            [25288] = 4.5 * 60,
-            [11601] = 4.5 * 54, --CONFIRMED 243
-            [11600] = 4.5 * 44,
-             [7379] = 4.5 * 34,
-             [6574] = 4.5 * 24,
-             [6572] = 4.5 * 14, --CONFIRMED 63
-        },
-        threatMod = 2.25,
-    },
-    ["Revenge Stun"] = {
-        ranks = {
-            [12798] = 25,
-        },
-        type = "DEBUFF",
-    },
-
-    ["Execute"] = {
-        ranks = {
-            26651
-        },
-        threatMod = 1.25,
-    },
-
-    ["Mocking Blow"] = {
-        ranks = {
-            [20560] = 2 * 56,
-            [20559] = 2 * 46,
-             [7402] = 2 * 36,
-             [7400] = 2 * 26,
-              [694] = 2 * 16,
-        },
-        type = "DEBUFF",
-    },
-
-    ["Taunt"] = {
-        ranks = {
-            355
-        },
-        handler = ATM.Taunt,
-    },
-
-    
     --[[ Season of Discovery ]]--
-    ["Enrage"] = {
-        ranks = {
-            [425415] = 1, --Consumed by Rage
-        }
-    },
-}
+--Enrage (Consumed by Rage)
+s[425415] = {onBuff=true,threat=1}

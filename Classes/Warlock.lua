@@ -264,12 +264,11 @@ prototype.spells = {
     --         [17752] = 600, --CONFIRMED 
     --     },
     -- },
-
-
-    
-    --[[ Season of Discovery ]]--
-    ["Metamorphosis"] = {
-        ranks = { 403789 },
-        handler = ATM.BuffThreatMod({[127] = 1.5}),
-    },
 }
+
+
+
+
+    --[[ Season of Discovery ]]--
+--Metamorphosis
+s[403789] = {handler=ATM.BuffThreatMod({[127] = 1.5})}
