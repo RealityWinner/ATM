@@ -1,6 +1,6 @@
 if _G.WOW_PROJECT_ID ~= _G.WOW_PROJECT_CLASSIC then return end
 local ATM, C, L, _ = unpack(select(2, ...))
-
+local s = ATM.spells
 
 local prototype = {
     class = "PALADIN",
@@ -46,53 +46,32 @@ function prototype:SPELL_AURA_REMOVED(...)
     ATM.Player.SPELL_AURA_REMOVED(self, ...) --call original handler
 end
 
-prototype.spells = {
-    ["Blessing of Freedom"] = {
-        ranks = {
-            [1044] = 18,
-        },
-    },
-    ["Blessing of Kings"] = {
-        ranks = {
-            [20217] = 20,
-        },
-    },
-    
-    ["Seal of Righteousness"] = {
-        ranks = {
-            [20154] = 1,
-        },
-    },
+--Blessing of Freedom
+s[1044]  = {onBuff=true,threat=18}
 
-    ["Retribution Aura"] = {
-        ranks = {
-            54043,
-        },
-        threatMod = 2.0,
-    },
+--Blessing of Kings
+s[20217] = {onBuff=true,threat=20}
 
-    ["Flash of Light"] = {
-        ranks = {
-            19750,
-        },
-        threatMod = 0.5,
-    },
-    ["Holy Light"] = {
-        ranks = {
-            48782,
-            48781,
-            27136,
-            27135,
-            25292,
-            10329,
-            10328,
-            3472,
-            1042,
-            1026,
-            647,
-            639,
-            635,
-        },
-        threatMod = 0.5,
-    },
-}
+--Seal of Righteousness
+s[20154] = {onBuff=true,threat=1}
+
+--Retribution Aura
+s[54043] = {threatMod=2.0}
+
+--Flash of Light
+s[19750] = {threatMod=0.5}
+
+--Holy Light
+s[48782] = {threatMod=0.5}
+s[48781] = {threatMod=0.5}
+s[27136] = {threatMod=0.5}
+s[27135] = {threatMod=0.5}
+s[25292] = {threatMod=0.5}
+s[10329] = {threatMod=0.5}
+s[10328] = {threatMod=0.5}
+s[3472]  = {threatMod=0.5}
+s[1042]  = {threatMod=0.5}
+s[1026]  = {threatMod=0.5}
+s[647]   = {threatMod=0.5}
+s[639]   = {threatMod=0.5}
+s[635]   = {threatMod=0.5}

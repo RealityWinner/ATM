@@ -1,6 +1,6 @@
 if _G.WOW_PROJECT_ID ~= _G.WOW_PROJECT_CLASSIC then return end
 local ATM, C, L, _ = unpack(select(2, ...))
-
+local s = ATM.spells
 
 local prototype = {
     class = "SHAMAN",
@@ -122,23 +122,16 @@ prototype.classFields = ATM.toTrue({
     'rockbiter',
 })
 
-prototype.spells = {
-    ["Earth Shock"] = {
-        ranks = {
-            10414,
-            10413,
-            10412,
-            8046,
-            8045,
-            8044,
-            8042,
-        },
-        threatMod = 2.0,
-    },
+--Earth Shock
+s[10414] = {threatMod=2.0}
+s[10413] = {threatMod=2.0}
+s[10412] = {threatMod=2.0}
+s[8046]  = {threatMod=2.0}
+s[8045]  = {threatMod=2.0}
+s[8044]  = {threatMod=2.0}
+s[8042]  = {threatMod=2.0}
 
-    --[[ Season of Discovery ]]--
-    ["Way of Earth"] = {
-        ranks = { 408680 },
-        handler = ATM.BuffThreatMod({[127] = 1.5}),
-    },
-}
+
+--[[ Season of Discovery ]]--
+--Way of Earth
+s[408680] = {handler = ATM.BuffThreatMod({[127] = 1.5})}

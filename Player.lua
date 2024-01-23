@@ -114,19 +114,6 @@ function Player:init()
         __index = ThreatBuffsIndex,
         __mode = "k", --weak
     });
-
-
-    -- Check against the global spell table on a miss
-    -- Save nils to improve speed at the cost of small amounts of memory
-    local function SpellIndex(table, key)
-        local spell = rawget(ATM.Player.spells, key)
-        table[key] = spell
-        return spell
-    end
-    setmetatable(self.spells, {
-        __index = SpellIndex,
-        __mode = "k", --weak
-    });
 end
 
 function Player:setGUID(guid)

@@ -1,6 +1,6 @@
 if _G.WOW_PROJECT_ID ~= _G.WOW_PROJECT_CLASSIC then return end
 local ATM, C, L, _ = unpack(select(2, ...))
-
+local s = ATM.spells
 
 local prototype = {
     class = "DRUID",
@@ -64,157 +64,103 @@ function prototype:getSubtletyMod()
     return self.subtletyMod
 end
 
-prototype.classFields = ATM.toTrue({
-})
 
-prototype.spells = {
-    ["Tranquility"] = {
-        ranks = {
-            9863,
-            9862,
-            8918,
-             740,
-        },
-        threatMod = prototype.getTranqMod,
-    },
-    ["Rejuvenation"] = {
-        ranks = {
-            25299,
-            9841,
-            9840,
-            9839,
-            8910,
-            3627,
-            2091,
-            2090,
-            1430,
-            1058,
-            774,
-        },
-        threatMod = prototype.getSubtletyMod,
-    },
-    ["Healing Touch"] = {
-        ranks = {
-            25297,
-            9889,
-            9888,
-            9758,
-            8903,
-            6778,
-            5189,
-            5188,
-            5187,
-            5186,
-            5185,
-        },
-        threatMod = prototype.getSubtletyMod,
-    },
-    ["Regrowth"] = {
-        ranks = {
-            9858,
-            9857,
-            9856,
-            9750,
-            8941,
-            8940,
-            8939,
-            8938,
-            8936,
-        },
-        threatMod = prototype.getSubtletyMod,
-    },
+--Tranquility
+s[740] = {threatMod = prototype.getTranqMod}
+s[8918] = {threatMod = prototype.getTranqMod}
+s[9862] = {threatMod = prototype.getTranqMod}
+s[9863] = {threatMod = prototype.getTranqMod}
 
-    
-    ["Gift of the Wild"] = {
-        ranks = {
-            [21850] = 60, --TODO
-            [21849] = 50, --TODO
-        },
-        type = "BUFF",
-    },
+--Rejuvenation
+s[25299] = {threatMod = prototype.getSubtletyMod}
+s[9841] = {threatMod = prototype.getSubtletyMod}
+s[9840] = {threatMod = prototype.getSubtletyMod}
+s[9839] = {threatMod = prototype.getSubtletyMod}
+s[8910] = {threatMod = prototype.getSubtletyMod}
+s[3627] = {threatMod = prototype.getSubtletyMod}
+s[2091] = {threatMod = prototype.getSubtletyMod}
+s[2090] = {threatMod = prototype.getSubtletyMod}
+s[1430] = {threatMod = prototype.getSubtletyMod}
+s[1058] = {threatMod = prototype.getSubtletyMod}
+s[774] = {threatMod = prototype.getSubtletyMod}
 
-    ["Mark of the Wild"] = {
-        ranks = {
-            [9885] =  60, --TODO
-            [9884] =  50, --TODO
-            [8907] =  40, --TODO
-            [5234] =  30, --TODO
-            [6756] =  20, --CONFIRMED
-            [5232] =  10, --CONFIRMED
-            [1126] =   1, --CONFIRMED
-        },
-        type = "BUFF",
-    },
+--Healing Touch
+s[25297] = {threatMod = prototype.getSubtletyMod}
+s[9889] = {threatMod = prototype.getSubtletyMod}
+s[9888] = {threatMod = prototype.getSubtletyMod}
+s[9758] = {threatMod = prototype.getSubtletyMod}
+s[8903] = {threatMod = prototype.getSubtletyMod}
+s[6778] = {threatMod = prototype.getSubtletyMod}
+s[5189] = {threatMod = prototype.getSubtletyMod}
+s[5188] = {threatMod = prototype.getSubtletyMod}
+s[5187] = {threatMod = prototype.getSubtletyMod}
+s[5186] = {threatMod = prototype.getSubtletyMod}
+s[5185] = {threatMod = prototype.getSubtletyMod}
+
+--Regrowth
+s[9858] = {threatMod = prototype.getSubtletyMod}
+s[9857] = {threatMod = prototype.getSubtletyMod}
+s[9856] = {threatMod = prototype.getSubtletyMod}
+s[9750] = {threatMod = prototype.getSubtletyMod}
+s[8941] = {threatMod = prototype.getSubtletyMod}
+s[8940] = {threatMod = prototype.getSubtletyMod}
+s[8939] = {threatMod = prototype.getSubtletyMod}
+s[8938] = {threatMod = prototype.getSubtletyMod}
+s[8936] = {threatMod = prototype.getSubtletyMod}
 
 
-    
-    ["Faerie Fire"] = {
-        ranks = {
-            [9907] = 108,
-            [9749] =  84,
-            [778]  =  60,
-            [770]  =  36,
-        },
-        type = "DEBUFF",
-    },
-    ["Faerie Fire (Feral)"] = {
-        ranks = {
-            [17392] = 108,
-            [17391] =  84,
-            [17390] =  60,
-            [16857] =  36,
-        },
-        type = "DEBUFF",
-    },
+--Gift of the Wild
+s[21850] = {onBuff=true,threat=60}
+s[21849] = {onBuff=true,threat=50}
 
-    
-    ["Cower"] = {
-        ranks = {
-            [9892] = -600,
-            [9000] = -390,
-            [8998] = -240,
-        },
-        type = "CAST", --TODO test
-    },
-    
-    ["Swipe"] = {
-        ranks = {
-            9908,
-            9754,
-            769,
-            780,
-            779,
-        },
-        threatMod = 1.75,
-    },
-    ["Maul"] = {
-        ranks = {
-            9881,
-            9880,
-            9745,
-            8972,
-            6809,
-            6808,
-            6807,
-        },
-        threatMod = 1.75,
-    },
-    
-    ["Demoralizing Roar"] = {
-        ranks = {
-            [9898] = 39,
-            [9747] = 30,
-            [9490] = 20,
-            [1735] = 15,
-              [99] =  9,
-        },
-        type = "DEBUFF",
-    },
+--Mark of the Wild
+s[9885] = {onBuff=true,threat=60}
+s[9884] = {onBuff=true,threat=50}
+s[8907] = {onBuff=true,threat=40}
+s[5234] = {onBuff=true,threat=30}
+s[6756] = {onBuff=true,threat=20}
+s[5232] = {onBuff=true,threat=10}
+s[1126] = {onBuff=true,threat=1}
 
-    ["Growl"] = {
-        ranks = {
-            6795
-        },
-        handler = ATM.Taunt,
-    },
-}
+--Faerie Fire
+s[9907] = {onDebuff=true,threat=108}
+s[9749] = {onDebuff=true,threat=84}
+s[778]  = {onDebuff=true,threat=60}
+s[770]  = {onDebuff=true,threat=36}
+
+--Faerie Fire (Feral)
+s[17392] = {onDebuff=true,threat=108}
+s[17391] = {onDebuff=true,threat=84}
+s[17390] = {onDebuff=true,threat=60}
+s[16857] = {onDebuff=true,threat=36}
+
+--Cower
+s[9892]   = {onCast=true,threat=-600}
+s[9000]   = {onCast=true,threat=-390}
+s[8998]   = {onCast=true,threat=-240}
+
+--Swipe
+s[9908]   = {threatMod = 1.75}
+s[9754]   = {threatMod = 1.75}
+s[769]    = {threatMod = 1.75}
+s[780]    = {threatMod = 1.75}
+s[779]    = {threatMod = 1.75}
+
+--Maul
+s[9881]   = {threatMod = 1.75}
+s[9880]   = {threatMod = 1.75}
+s[9745]   = {threatMod = 1.75}
+s[8972]   = {threatMod = 1.75}
+s[6809]   = {threatMod = 1.75}
+s[6808]   = {threatMod = 1.75}
+s[6807]   = {threatMod = 1.75}
+
+--Demoralizing Roar
+s[9898]   = {onDebuff=true, threat=39}
+s[9747]   = {onDebuff=true, threat=30}
+s[9490]   = {onDebuff=true, threat=20}
+s[1735]   = {onDebuff=true, threat=15}
+s[99]     = {onDebuff=true, threat=9}
+
+--Growl
+s[6795]   = {handler = ATM.Taunt}

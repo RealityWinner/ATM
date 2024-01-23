@@ -1,6 +1,6 @@
 if _G.WOW_PROJECT_ID ~= _G.WOW_PROJECT_CLASSIC then return end
 local ATM, C, L, _ = unpack(select(2, ...))
-
+local s = ATM.spells
 
 local prototype = {
     class = "MAGE",
@@ -10,210 +10,118 @@ ATM.playerMixins[prototype.class] = prototype
 
 function prototype:scanTalents()
     -- ATM:print("MAGE:scanTalent")
-    
-    --TODO update
 
     --Arcane Subtlety
-    self.threatBuffs[64] = 1 - 0.2 * self:GetTalent(1, 1)
+    self.threatBuffs["Arcane Subtlety"] = {[64] = 1 - 0.2 * self:GetTalent(1, 1)}
     --Frost Channeling
-    self.threatBuffs[16] = 1 - 0.1 * self:GetTalent(3, 12)
+    self.threatBuffs["Frost Channeling"] = {[16] = 1 - 0.1 * self:GetTalent(3, 12)}
     --Burning Soul
-    self.threatBuffs[4]  = 1 - 0.15 * self:GetTalent(2, 9)
+    self.threatBuffs["Burning Soul"] = {[4]  = 1 - 0.15 * self:GetTalent(2, 9)}
 end
 
-prototype.spells = {
-    
-    --ARCANE SPELLS
-    ["Clearcasting"] = {
-        ranks = {
-            [12536] = 10,
-        },
-        type = "BUFF",
-    },
+--Clearcasting
+s[12536] = {onBuff=true,threat=10}
 
-    ["Amplify Magic"] = {
-        ranks = {
-            [10170] = 54, --CONFIRMED
-            [10169] = 42, --CONFIRMED
-             [8455] = 30, --CONFIRMED
-             [1008] = 18, --CONFIRMED  
-        },
-        type = "BUFF",
-    },
+--Amplify Magic
+s[10170] = {onBuff=true,threat=54}
+s[10169] = {onBuff=true,threat=42}
+s[8455]  = {onBuff=true,threat=30}
+s[1008]  = {onBuff=true,threat=18}
 
-    ["Arcane Brilliance"] = {
-        ranks = {
-            [23028] = 56, --MULTIPLY BY NUMBER OF BUFFED PLAYERS
-        },
-        type = "BUFF",
-    },
+--Arcane Brilliance
+s[23028] = {onBuff=true,threat=56}
 
-    ["Arcane Intellect"] = {
-        ranks = {
-            [10157] = 56, --CONFIRMED
-            [10156] = 42, --CONFIRMED
-             [1461] = 28, --CONFIRMED
-             [1460] = 14, --CONFIRMED
-             [1459] =  1, --CONFIRMED
-        },
-        type = "BUFF",
-    },
+--Arcane Intellect
+s[10157] = {onBuff=true,threat=56}
+s[10156] = {onBuff=true,threat=42}
+s[1461]  = {onBuff=true,threat=28}
+s[1460]  = {onBuff=true,threat=14}
+s[1459]  = {onBuff=true,threat=1}
 
-    ["Blink"] = {
-        ranks = {
-            [1953] = 20, --CONFIRMED
-        },
-        type = "BUFF",
-    },
+--Blink
+s[1953]  = {onBuff=true,threat=20}
 
-    ["Counterspell"] = {
-        ranks = {
-            [2139] = 300, --CONFIRMED
-        },
-        type = "CAST",
-    },
+--Counterspell
+s[1953]  = {onCast=true,threat=300}
 
-    ["Dampen Magic"] = {
-        ranks = {
-            [10174] = 60, --CONFIRMED
-            [10173] = 48, --CONFIRMED
-             [8451] = 36, --CONFIRMED
-             [8450] = 24, --CONFIRMED
-              [604] = 12, --CONFIRMED   
-        },
-        type = "BUFF",
-    },
+--Dampen Magic
+s[10174] = {onBuff=true,threat=60}
+s[10173] = {onBuff=true,threat=48}
+s[8451]  = {onBuff=true,threat=36}
+s[8450]  = {onBuff=true,threat=24}
+s[604]   = {onBuff=true,threat=12}
 
-    ["Evocation"] = {
-        ranks = {
-            [12051] = 20, --CONFIRMED
-        },
-        type = "BUFF",
-    },
+--Evocation
+s[12051] = {onBuff=true,threat=20}
 
-    ["Mage Armor"] = {
-        ranks = {
-            [22783] =  58,
-            [22782] =  46,
-            [6117] =  34,
-        },
-        type = "BUFF",
-    },
+--Mage Armor
+s[22783] = {onBuff=true,threat=58}
+s[22782] = {onBuff=true,threat=46}
+s[6117]  = {onBuff=true,threat=34}
 
-    ["Mana Shield"] = {
-        ranks = {
-            [10193] =  60, --CONFIRMED
-            [10192] =  52, --CONFIRMED
-            [10191] =  44, --CONFIRMED
-             [8495] =  36, --CONFIRMED
-             [8494] =  28, --CONFIRMED
-             [1463] =  20, --CONFIRMED
-        },
-        type = "BUFF",
-    },
+--Mana Shield
+s[10193] = {onBuff=true,threat=60}
+s[10192] = {onBuff=true,threat=52}
+s[10191] = {onBuff=true,threat=44}
+s[8495]  = {onBuff=true,threat=36}
+s[8494]  = {onBuff=true,threat=28}
+s[1463]  = {onBuff=true,threat=20}
 
-    ["Polymorph"] = {
-        ranks = {
-            [118] = 16, --CONFIRMED
-            [12824] = 40, --CONFIRMED
-            [12825] = 80, --CONFIRMED
-            [12826] = 120, --CONFIRMED
-            [28272] = 120, --CONFIRMED
-            [28271] = 120, --TODO
-        },
-        type = "CC",
-    },
+--Polymorph
+s[28271] = {isCC=true,onDebuff=true,threat=120}
+s[28272] = {isCC=true,onDebuff=true,threat=120}
+s[12826] = {isCC=true,onDebuff=true,threat=120}
+s[12825] = {isCC=true,onDebuff=true,threat=80}
+s[12824] = {isCC=true,onDebuff=true,threat=40}
+s[118]   = {isCC=true,onDebuff=true,threat=16}
 
-    ["Remove Lesser Curse"] = {
-        ranks = {
-            [475] = 18, --CONFIRMED
-        },
-        type = "CAST",
-    },
+--Remove Lesser Curse
+s[475]   = {threat=18,handler=ATM.Dispel}
 
-    ["Slow Fall"] = {
-        ranks = {
-            [130] = 12, --CONFIRMED
-        },
-        type = "BUFF",
-    },
+--Slow Fall
+s[130]  = {onBuff=true,threat=12}
 
-    --FIRE SPELLS
-    ["Impact"] = {
-        ranks = {
-            [12355] = 20, --CONFIRMED
-        },
-        type ="CC",
-    },
+--Impact
+s[12355] = {isCC=true,onDebuff=true,threat=20}
 
-    ["Fire Ward"] = {
-        ranks = {
-            [10225] = 60, 
-            [10223] = 50, --CONFIRMED
-             [8458] = 40, --CONFIRMED
-             [8457] = 30, --CONFIRMED
-              [543] = 20, --CONFIRMED  
-        },
-        type = "BUFF",
-    },
+--Fire Ward
+s[10225] = {onBuff=true,threat=60}
+s[10223] = {onBuff=true,threat=50}
+s[8458]  = {onBuff=true,threat=40}
+s[8457]  = {onBuff=true,threat=30}
+s[543]   = {onBuff=true,threat=20}
 
-    --FROST SPELLS
-    ["Frostbite"] = {
-        ranks = {
-            [12497] = 20, --CONFIRMED
-            [12496] = 20, 
-            [11071] = 20, 
-        },
-        type ="DEBUFF",
-    },
+--Frostbite
+s[12497]  = {onDebuff=true,threat=20}
+s[12496]  = {onDebuff=true,threat=20}
+s[11071]  = {onDebuff=true,threat=20}
 
-    ["Frost Armor"] = {
-        ranks = {
-            [168] =  1, --CONFIRMED
-            [7300] =  10, --CONFIRMED
-            [7301] =  20, --CONFIRMED
-        },
-        type = "BUFF",
-    },
+--Frost Armor
+s[7301]  = {onBuff=true,threat=20}
+s[7300]  = {onBuff=true,threat=20}
+s[168]   = {onBuff=true,threat=1}
 
-    ["Frost Nova"] = {
-        ranks = {
-            [10230] =  50, --CONFIRMED
-             [6131] =  50, --CONFIRMED
-              [865] =  30, --CONFIRMED
-              [122] =  20, --CONFIRMED
-        },
-        type = "DEBUFF",
-    },
+--Frost Nova
+s[10230] = {onDebuff=true,threat=50}
+s[6131]  = {onDebuff=true,threat=50}
+s[865]   = {onDebuff=true,threat=30}
+s[122]   = {onDebuff=true,threat=20}
 
-    ["Frost Ward"] = {
-        ranks = {
-            [6143] =  22, --CONFIRMED
-            [8461] =  32, --CONFIRMED
-            [8462] =  42, --CONFIRMED
-            [10177] =  52, --CONFIRMED
-            [28609] =  60, 
-        },
-        type = "BUFF",
-    },
+--Frost Ward
+s[28609] = {onBuff=true,threat=60}
+s[10177] = {onBuff=true,threat=52}
+s[8462]  = {onBuff=true,threat=42}
+s[8461]  = {onBuff=true,threat=32}
+s[6143]  = {onBuff=true,threat=22}
 
-    ["Ice Armor"] = {
-        ranks = {
-            [7302] =  30, --CONFIRMED
-            [7320] =  40, --CONFIRMED
-            [10219] =  50, --CONFIRMED
-            [10220] =  60, --CONFIRMED
-        },
-        type = "BUFF",
-    },
+--Ice Armor
+s[10220] = {onBuff=true,threat=60}
+s[10219] = {onBuff=true,threat=50}
+s[7320]  = {onBuff=true,threat=40}
+s[7302]  = {onBuff=true,threat=30}
 
-    ["Ice Barrier"] = {
-        ranks = {
-            [11426] =  53.5, --CONFIRMED
-            [13031] =  53.5, --CONFIRMED
-            [13032] =  53.5, --CONFIRMED
-            [13033] =  53.5, --CONFIRMED
-        },
-        type = "BUFF",
-    },
-}
+--Ice Barrier
+s[13033] = {onBuff=true,threat=53.5}
+s[13032] = {onBuff=true,threat=53.5}
+s[13031] = {onBuff=true,threat=53.5}
+s[11426] = {onBuff=true,threat=53.5}

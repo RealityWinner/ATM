@@ -1,12 +1,12 @@
 if _G.WOW_PROJECT_ID ~= _G.WOW_PROJECT_CLASSIC then return end
 local ATM, C, L, _ = unpack(select(2, ...))
-
+local s = ATM.spells
 
 local prototype = {
     class = "WARRIOR",
 
-    -- Stances
-    defianceMod = 1.0
+    defianceMod = 1.0,
+    mightCount = 0,
 }
 prototype.color = "|c"..RAID_CLASS_COLORS[prototype.class].colorStr
 ATM.playerMixins[prototype.class] = prototype
@@ -22,9 +22,15 @@ function prototype:scanTalents()
     end
 end
 
-prototype.classFields = ATM.toTrue({
-})
+function prototype:scanEquipment()
+    ATM.Player.scanEquipment(self) --call original handler
 
+    self.mightCount = 0
+    for slotID,data in pairs(self._equipment) do
+        local setID = select(16, GetItemInfo(unpack(data)))
+        self.mightCount = self.mightCount + (setID and setID == 209 and 1 or 0)
+    end
+end
 
 function prototype:SPELL_AURA_APPLIED(...)
     local spellID, spellName = select(12, ...)
@@ -42,86 +48,65 @@ function prototype:SPELL_AURA_APPLIED(...)
 end
 
 function prototype:eightSetMight()
-    --TODO this
-    return 1.0
+    return self.mightCount >= 8 and 1.15 or 1
 end
 
-prototype.spells = {
-    ["Charge"] = {
-        ranks = {
-            11578,
-            6178,
-            100,
-        },
-        ignored = true, --charge generates no combat or threat, tested and confirmed
-    },
-    ["Charge Stun"] = {
-        ranks = {
-            7922,
-        },
-        type = "CC",
-        ignored = true, --stun generates no combat or threat, tested and confirmed
-    },
-    --Intercept charge generates no threat, damage is part of stun
-    -- ["Intercept"] = {
-    --     ranks = {
-    --         20617,
-    --         20616,
-    --         20252,
-    --     },
-    --     -- ignored = true, 
-    -- },
-    ["Intercept Stun"] = {
-        ranks = {
-            20615,
-            20614,
-            20253,
-        },
-        threatMod = 2.0,
-    },
+function prototype:thunderClap()
+    return self._equipment[5] and self._equipment[5][3] == 6801 and 3.75 or 2.5
+end
 
-    ["Battle Shout"] = {
-        ranks = {
-            [25289] = 60, --AQ40
-            [11551] = 52,
-            [11550] = 42,
-            [11549] = 32,
-            [6192] = 22,
-            [5242] = 12,
-            [6673] = 1,
-        },
-    },
-    ["Demoralizing Shout"] = {
-        ranks = {
-            [11556] = 48 * 54 / 60, --CONFIRMED
-            [11555] = 48 * 44 / 60,
-            [11554] = 48 * 34 / 60,
-             [6190] = 48 * 24 / 60,
-             [1160] = 48 * 14 / 60, --CONFIRMED
-        },
-    },
-    ["Thunder Clap"] = {
-        ranks = {
-            11581,
-            11580,
-            8205,
-            8204,
-            8198,
-            6343,
-        },
-        type = "DAMAGE",
-        threatMod = 2.5,
-    },
-    
-    ["Hamstring"] = {
-        ranks = {
-            [7373] = 135,
-            [7372] = 135 * (32/54),
-            [1715] = 135 * (8/54), --CONFIRMED 20
-        },
-        type = "DAMAGE",
-        threatMod = 1.25,
-    },
+
+--Charge
+s[11578] = {ignored=true}
+s[6178]  = {ignored=true}
+s[100]   = {ignored=true}
+
+--Charge Stun
+s[7922]  = {isCC=true,ignored=true}
+
+--Intercept
+s[20617]  = {ignored=true}
+s[20616]  = {ignored=true}
+s[20252]  = {ignored=true}
+
+--Intercept Stun
+s[20615]  = {isCC=true, threatMod=2.0}
+s[20614]  = {isCC=true, threatMod=2.0}
+s[20253]  = {isCC=true, threatMod=2.0}
+
+--Battle Shout
+s[25289] = {threat=60}
+s[11551] = {threat=52}
+s[11550] = {threat=42}
+s[11549] = {threat=32}
+s[6192]  = {threat=22}
+s[5242]  = {threat=12}
+s[6673]  = {threat=1}
+
+--Demoralizing Shout
+s[11556] = {threat=0.8*54}
+s[11555] = {threat=0.8*44}
+s[11554] = {threat=0.8*34}
+s[6190]  = {threat=0.8*24}
+s[1160]  = {threat=0.8*14}
+
+--Thunder Clap
+s[11581] = {threatMod=prototype.thunderClap}
+s[11580] = {threatMod=prototype.thunderClap}
+s[8205]  = {threatMod=prototype.thunderClap}
+s[8204]  = {threatMod=prototype.thunderClap}
+s[8198]  = {threatMod=prototype.thunderClap}
+s[6343]  = {threatMod=prototype.thunderClap}
+
+--Hamstring
+s[7373] = {threat=2.5*54,threatMod=1.25}
+s[7372] = {threat=2.5*32,threatMod=1.25}
+s[1715] = {threat=2.5*8,threatMod=1.25}
+
+--Shield Slam
+
+
+prototype.spells = {
     ["Shield Slam"] = {
         ranks = {
             [23925] = 254,
