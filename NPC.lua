@@ -232,14 +232,10 @@ setmetatable(ATM._enemies, {
 });
 
 function ATM:getEnemy(enemyGUID, skipCreate)
-    local enemy
-    if skipCreate then
-        enemy = rawget(self._enemies, enemyGUID)
-    else
-        enemy = self._enemies[enemyGUID]
-    end
+    local enemy = rawget(self._enemies, enemyGUID)
     if enemy then enemy.lastAccess = self:GetTime() end
-    return enemy
+    if enemy or skipCreate then return enemy end
+    return self._enemies[enemyGUID]
 end
 
 function ATM:newEnemy(enemyGUID)

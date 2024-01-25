@@ -524,14 +524,6 @@ function Player:SPELL_MISSED(...)
     local spellData = ATM.spells[spellID]
     if spellData and spellData.onCast then
         local threat = spellData.threat * self.threatBuffs[spellSchool]
-        if spellData.threatMod then
-            if type(spellData.threatMod) == "function" then
-                threat = threat * spellData.threatMod(self)
-            else
-                threat = threat * spellData.threatMod
-            end
-        end
-
         if bit.band(destFlags, COMBATLOG_OBJECT_CONTROL_PLAYER) > 0 then
             self:addThreat(-threat) --can this happen?
         else
@@ -554,11 +546,17 @@ function Player:SPELL_DAMAGE(...)
         if spellData.onDamage and spellData.threat then
             threat = threat + spellData.threat
         end
-        if spellData.threatMod then
-            if type(spellData.threatMod) == "function" then
-                threat = threat * spellData.threatMod(self)
-            else
-                threat = threat * spellData.threatMod
+
+        local t = type(spellData.threatMod)
+        if t == "number" then
+            threat = threat * spellData.threatMod
+            if C.debug then
+                ATM.insert(self.currentEvent, " S:", tostring(spellData.threatMod))
+            end
+        elseif t == "function" then
+            threat = threat * spellData.threatMod(self)
+            if C.debug then
+                ATM.insert(self.currentEvent, " S:", tostring(spellData.threatMod(self)))
             end
         end
     end
@@ -595,7 +593,7 @@ function Player:SPELL_HEAL(...)
     end
     
     local threat = (amount-overhealing) / 2.0
-    
+
     local spellData = ATM.spells[spellID]
     if spellData then
         -- Ignore healing done from leech spells
@@ -716,8 +714,8 @@ function Player:SPELL_AURA_REMOVED(...)
     local spellData = ATM.spells[spellID]
     if not spellData or not spellData.isCC then return end
     
-    if bit.band(destFlags, COMBATLOG_OBJECT_TYPE_NPC) > 0 then
-        local enemy = ATM:getEnemy(destGUID)
+    local enemy = ATM:getEnemy(destGUID, true)
+    if enemy then
         enemy:setCC(spellName, false)
         enemy.lastThreatUpdate = ATM:GetTime() --ignore threat updates while still CC'd
     end
