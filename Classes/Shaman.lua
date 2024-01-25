@@ -27,6 +27,15 @@ local rbThreat = {
     55,
     72,
 }
+local rbRanks = ({
+    [29] = 1,
+     [6] = 2,
+     [1] = 3,
+   [503] = 4,
+  [1663] = 5,
+   [683] = 6,
+  [1664] = 7,
+})
 
 local speedCache = {}
 local function getSpeed(itemLink)
@@ -58,45 +67,25 @@ function prototype:scanEquipment()
 
     --Rockbiter
     if self._isLocal then
-        local newRockbiterMH,newRockbiterOH = 0,0
+        local newRockbiter = 0
+        local wepSpeed = getSpeed(GetInventoryItemLink("player", 16))
         local hasMainHandEnchant, mainHandExpiration, mainHandCharges, mainHandEnchantID, hasOffHandEnchant, offHandExpiration, offHandCharges, offHandEnchantID = GetWeaponEnchantInfo()
         if hasMainHandEnchant then
-            local speed = getSpeed(GetInventoryItemLink("player", 16))
-            local rank = ({
-                  [29] = 1,
-                   [6] = 2,
-                   [1] = 3,
-                 [503] = 4,
-                [1663] = 5,
-                 [683] = 6,
-                [1664] = 7,
-            })[mainHandEnchantID]
+            local rank = rbRanks[mainHandEnchantID]
             if rank then
-                local threat = rbThreat[rank] * speed
-                newRockbiterMH = math.floor(threat)
+                newRockbiter = newRockbiter + math.floor(rbThreat[rank] * wepSpeed)
             end
         end
         if hasOffHandEnchant then
-            local speed = getSpeed(GetInventoryItemLink("player", 16))
-            local rank = ({
-                  [29] = 1,
-                   [6] = 2,
-                   [1] = 3,
-                 [503] = 4,
-                [1663] = 5,
-                 [683] = 6,
-                [1664] = 7,
-            })[offHandEnchantID]
+            local rank = rbRanks[offHandEnchantID]
             if rank then
-                local threat = rbThreat[rank] * speed
-                newRockbiterOH = math.floor(threat)
+                newRockbiter = newRockbiter + math.floor(rbThreat[rank] * wepSpeed)
             end
         end
-        if self.rockbiterMH ~= newRockbiterMH or self.rockbiterOH ~= newRockbiterOH then
-            self.rockbiterMH = newRockbiterMH
-            self.rockbiterOH = newRockbiterOH
+        if self.rockbiter ~= newRockbiter then
+            self.rockbiter = newRockbiter
             ATM:TransmitSelf(true) --always sends custom no need to update any timestamps
-            ATM:print("New rockbiter threat!", self.rockbiterMH, self.rockbiterOH)
+            ATM:print("New rockbiter threat!", self.rockbiter)
         end
     end
 end
@@ -108,7 +97,7 @@ function prototype:SWING_DAMAGE(...)
     local isOffHand = select(21, ...)
     if not amount or amount < 1 then return end
 
-    local bonusThreat = self.rockbiterMH + self.rockbiterOH
+    local bonusThreat = self.rockbiter
     if bonusThreat and bonusThreat > 0 then
         if C.debug then
             self.currentEvent = {"[", self.color, self.name, "|r] ", "Rockbiter ", isOffHand and "OH" or "MH"}
@@ -117,7 +106,6 @@ function prototype:SWING_DAMAGE(...)
         self:addThreat(bonusThreat * self.threatBuffs[1], destGUID)
     end
 end
---TODO localize Rockbiter enchant match (BOOST2_SHAMANENHANCE_REMIND_ROCKBITER?)
 
 function prototype:UNIT_AURA()
     for i=1,999 do
@@ -132,8 +120,7 @@ function prototype:UNIT_AURA()
 end
 
 prototype.classFields = ATM.toTrue({
-    'rockbiterMH',
-    'rockbiterOH',
+    'rockbiter',
 })
 
 --Earth Shock
