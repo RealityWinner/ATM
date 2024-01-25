@@ -21,14 +21,13 @@ setmetatable(ATM._players, {
 });
 
 function ATM:getPlayer(playerGUID, skipCreate)
-    if not playerGUID or not ATM.starts_with(playerGUID, "Player-") then
-        return nil
-    end
-
+    if not playerGUID then return end
     -- self:print("ATM:getPlayer", playerGUID)
-    if skipCreate then
-        return rawget(self._players, playerGUID)
-    else
+
+    local player = rawget(self._players, playerGUID)
+    if player or skipCreate then return player end
+
+    if ATM.starts_with(playerGUID, "Player-") then
         return self._players[playerGUID]
     end
 end

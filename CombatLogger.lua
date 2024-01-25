@@ -184,7 +184,13 @@ function CombatLogger:COMBAT_LOG_EVENT_UNFILTERED(...)
 
 	if bit.band(sourceFlags, COMBATLOG_OBJECT_TYPE_PLAYER) > 0 then
 		-- Ignore self and PVP damage
-		if bit.band(destFlags, COMBATLOG_OBJECT_TYPE_PLAYER) > 0 and ATM.ends_with(subevent, "_DAMAGE") then
+		if bit.band(destFlags, COMBATLOG_OBJECT_TYPE_PLAYER) > 0 and (false
+		or subevent == "SWING_DAMAGE"
+		or subevent == "RANGE_DAMAGE"
+		or subevent == "SPELL_DAMAGE"
+		or subevent == "SPELL_PERIODIC_DAMAGE"
+		or subevent == "DAMAGE_SHIELD"
+		) then
 			return
 		end
 
@@ -210,7 +216,12 @@ function CombatLogger:COMBAT_LOG_EVENT_UNFILTERED(...)
 		end
 	end
 
-	if bit.band(destFlags, COMBATLOG_OBJECT_TYPE_PLAYER) > 0 and (ATM.ends_with(subevent, "_ENERGIZE") or ATM.starts_with(subevent, "ENCHANT_")) then
+	if bit.band(destFlags, COMBATLOG_OBJECT_TYPE_PLAYER) > 0 and (false
+	or subevent == "SPELL_ENERGIZE"
+	or subevent == "SPELL_PERIODIC_ENERGIZE"
+	or subevent == "ENCHANT_APPLIED"
+	or subevent == "ENCHANT_REMOVED"
+	) then
 		local player = ATM:getPlayer(destGUID)
 		if not player then return end
 		if C.debug then
@@ -234,7 +245,7 @@ function CombatLogger:COMBAT_LOG_EVENT_UNFILTERED(...)
 		if not enemy then return end
 
 		-- Any actions towards a player will be considered hostile (AMERICCAAAAAAA)
-		if bit.band(destFlags, COMBATLOG_OBJECT_TYPE_PLAYER) > 0 and not ATM.starts_with(subevent, "SPELL_AURA_") then
+		if bit.band(sourceFlags, COMBATLOG_OBJECT_REACTION_HOSTILE) > 0 and bit.band(destFlags, COMBATLOG_OBJECT_CONTROL_PLAYER) > 0 then
 			enemy:setCombat(true)
 		end
 		
