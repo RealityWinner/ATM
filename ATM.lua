@@ -812,7 +812,11 @@ function ATM:EnableDebug()
 		end
 	else
 		ATM.print = function (self, ...)
-			ATM.debugChatFrame:AddMessage(table.concat({...}, " "))
+			local str = ""
+			for k,v in pairs({...}) do
+				str = str .. tostring(v) .. " "
+			end
+			ATM.debugChatFrame:AddMessage(str)
 		end
 	end
 end
