@@ -12,259 +12,130 @@ function prototype:scanTalents()
     -- ATM:print("WARLOCK:scanTalents")
 end
 
-prototype.spells = {
-    ["Searing Pain"] = {
-        ranks = {
-             5676,
-            17919,
-            17920,
-            17921,
-            17922,
-            17923,
-        },
-        threatMod = 2.0,
-    },
 
-    ["Banish"] = {
-        ranks = {
-            [710] = 56, --CONFIRMED
-            [18647] = 96, --CONFIRMED    
-        },
-        type = "CC",
-    },
+--Searing Pain
+s[5676]  = {threatMod=2.0}
+s[17919] = {threatMod=2.0}
+s[17920] = {threatMod=2.0}
+s[17921] = {threatMod=2.0}
+s[17922] = {threatMod=2.0}
+s[17923] = {threatMod=2.0}
 
-    ["Curse of Doom"] = {
-        ranks = {
-            [603] = 120, --CONFIRMED   
-        },
-        type = "DEBUFF",
-    },
+--Banish
+s[710]   = {isCC=true,onDebuff=true,threat=56}
+s[18647] = {isCC=true,onDebuff=true,threat=96}
 
-    ["Curse of Recklessness"] = {
-        ranks = {
-            [704] = 28, --CONFIRMED
-            [7658] = 56, --CONFIRMED
-            [7659] = 84, --CONFIRMED
-            [11717] = 112, --CONFIRMED      
-        },
-        type = "DEBUFF",
-    },
+--Curse of Doom
+s[603]   = {onDebuff=true,threat=120}
 
-    ["Curse of Shadow"] = {
-        ranks = {
-            [17862] = 88, --CONFIRMED
-            [17937] = 112, --CONFIRMED    
-        },
-        type = "DEBUFF",
-    },
+--Curse of Recklessness
+s[704]   = {onDebuff=true,threat=28}
+s[7658]  = {onDebuff=true,threat=56}
+s[7659]  = {onDebuff=true,threat=84}
+s[11717] = {onDebuff=true,threat=112}
 
-    ["Curse of Tongues"] = {
-        ranks = {
-            [1714] = 52, --CONFIRMED
-            [11719] = 100, --CONFIRMED    
-        },
-        type = "DEBUFF",
-    },
+--Curse of Shadow
+s[17862] = {onDebuff=true,threat=88}
+s[17937] = {onDebuff=true,threat=112}
 
-    ["Curse of Weakness"] = {
-        ranks = {
-            [702] = 8, --CONFIRMED
-            [1108] = 24, --CONFIRMED
-            [6205] = 44, --CONFIRMED
-            [7646] = 64, --CONFIRMED   
-            [11707] = 84, --CONFIRMED
-            [11708] = 104, --CONFIRMED       
-        },
-        type = "DEBUFF",
-    },
+--Curse of Tongues
+s[1714]  = {onDebuff=true,threat=52}
+s[11719] = {onDebuff=true,threat=100}
 
-    ["Curse of the Elements"] = {
-        ranks = {
-            [1490] = 64, --CONFIRMED
-            [11721] = 92, --CONFIRMED 
-            [11722] = 120, --CONFIRMED
-        },
-        type = "DEBUFF",
-    },
+--Curse of Weakness
+s[702]   = {onDebuff=true,threat=8}
+s[1108]  = {onDebuff=true,threat=24}
+s[6205]  = {onDebuff=true,threat=44}
+s[7646]  = {onDebuff=true,threat=64}
+s[11707] = {onDebuff=true,threat=84}
+s[11708] = {onDebuff=true,threat=104}
 
-    ["Fear"] = {
-        ranks = {
-            [5782] = 16, --CONFIRMED
-            [6213] = 64, --CONFIRMED   
-            [6215] = 112, --CONFIRMED   
-        },
-        type = "CC",
-    },
+--Curse of the Elements
+s[1490]  = {onDebuff=true,threat=64}
+s[11721] = {onDebuff=true,threat=92}
+s[11722] = {onDebuff=true,threat=120}
 
-    ["Pyroclasm"] = {
-        ranks = {
-            [18073] = 70, --CONFIRMED
-            [18096] = 70,   
-        },
-        type = "CC",
-    },
+--Fear
+s[5782]  = {isCC=true,onDebuff=true,threat=16}
+s[6213]  = {isCC=true,onDebuff=true,threat=64}
+s[6215]  = {isCC=true,onDebuff=true,threat=112}
 
-    ["Howl of Terror"] = {
-        ranks = {
-            [5484] = 80, --CONFIRMED
-            [17928] = 108, --CONFIRMED    
-        },
-        type = "CC",
-    },
+--Pyroclasm
+s[18073] = {isCC=true,onDebuff=true,threat=70}
+s[18096] = {isCC=true,onDebuff=true,threat=70}
 
-    -- only apply on debuff
-    ["Siphon Life"] = {
-        ranks = {
-            [18265] = 60, --CONFIRMED
-            [18879] = 76, --CONFIRMED  
-            [18880] = 96, --CONFIRMED
-            [18881] = 116, --CONFIRMED  
-        },
-        type = "LEECH",
-    },
+--Howl of Terror
+s[5484]  = {isCC=true,onDebuff=true,threat=80}
+s[17928] = {isCC=true,onDebuff=true,threat=108}
 
-    -- No threat
-    ["Drain Mana"] = {
-        ranks = {
-            11704,
-            11703,
-            6226,
-            5138,
-        },
-        ignore = true,
-    },
+--Siphon Life
+s[18265] = {isLeech=true,onDebuff=true,threat=60}
+s[18879] = {isLeech=true,onDebuff=true,threat=76}
+s[18880] = {isLeech=true,onDebuff=true,threat=96}
+s[18881] = {isLeech=true,onDebuff=true,threat=116}
 
-    ["Demon Skin"] = {
-        ranks = {
-            [687] = 1, --CONFIRMED
-            [696] = 10, --CONFIRMED   
-        },
-        type = "BUFF",
-    },
+--Drain Mana
+s[11704] = {ignored=true}
+s[11703] = {ignored=true}
+s[6226]  = {ignored=true}
+s[5138]  = {ignored=true}
 
-    ["Demon Armor"] = {
-        ranks = {
-            [11735] = 60, --CONFIRMED
-            [11734] = 50, --CONFIRMED   
-            [11733] = 40, --CONFIRMED
-             [1086] = 30, --CONFIRMED   
-              [706] = 20, --CONFIRMED  
-        },
-        type = "BUFF",
-    },
 
-    ["Conflagrate"] = {
-        ranks = {
-            [18932] = 120, 
-            [18931] = 108, 
-            [18930] =  96, 
-            [17962] =  80, --CONFIRMED
-        },
-        type = "DMG",
-    },
+--Demon Skin
+s[687]   = {onBuff=true,threat=1}
+s[696]   = {onBuff=true,threat=10}
 
-    ["Create Firestone (Lesser)"] = {
-        ranks = {
-            [6366] = 28, --CONFIRMED
-        },
-        type = "CAST",
-    },
-    ["Create Firestone"] = {
-        ranks = {
-            [17951] = 36, --CONFIRMED
-        },
-        type = "CAST",
-    },
-    ["Create Firestone (Greater)"] = {
-        ranks = {
-            [17952] = 46, --CONFIRMED
-        },
-        type = "CAST",
-    },
-    ["Create Firestone (Major)"] = {
-        ranks = {
-            [17953] = 56, --CONFIRMED
-        },
-        type = "CAST",
-    },
-    ["Create Spellstone"] = {
-        ranks = {
-            [2362] = 36, --CONFIRMED
-        },
-        type = "CAST",
-    },
-    ["Create Spellstone (Greater)"] = {
-        ranks = {
-            [17727] = 48, --CONFIRMED
-        },
-        type = "CAST",
-    },
-    ["Create Spellstone (Major)"] = {
-        ranks = {
-            [17728] = 60, --CONFIRMED
-        },
-        type = "CAST",
-    },
+--Demon Armor
+s[706]   = {onBuff=true,threat=20}
+s[1086]  = {onBuff=true,threat=30}
+s[11733] = {onBuff=true,threat=40}
+s[11734] = {onBuff=true,threat=50}
+s[11735] = {onBuff=true,threat=60}
 
-    ["Detect Lesser Invisibility"] = {
-        ranks = {
-            [132] = 26, --CONFIRMED
-        },
-        type = "BUFF",
-    },
-    ["Detect Invisibility"] = {
-        ranks = {
-            [2970] = 38, --CONFIRMED
-        },
-        type = "BUFF",
-    },
-    ["Detect Greater Invisibility"] = {
-        ranks = {
-            [11743] = 50, --CONFIRMED
-        },
-        type = "BUFF",
-    },
+--Conflagrate
+s[17962] = {onDamage=true,threat=80}
+s[18930] = {onDamage=true,threat=96}
+s[18931] = {onDamage=true,threat=108}
+s[18932] = {onDamage=true,threat=120}
 
-    ["Eye of Kilrogg"] = {
-        ranks = {
-            [126] = 22, --CONFIRMED
-        },
-        type = "BUFF",
-    },
+--Create Firestone (Lesser)
+s[6366]  = {onCast=true,threat=28}
 
-    ["Shadow Ward"] = {
-        ranks = {
-            [6229] = 32, --CONFIRMED
-            [11739] = 42, --CONFIRMED
-            [11740] = 52, --CONFIRMED
-            [28610] = 60, 
-        },
-        type = "BUFF",
-    },
+--Create Firestone
+s[17951] = {onCast=true,threat=36}
 
-    --SPELLS TO TEST: Whatever comes from talents, Shadowburn, Soul Fire, Inferno and pet abilities besides Torment and Suffering.
+--Create Firestone (Greater)
+s[17952] = {onCast=true,threat=46}
 
-    -- PET ABILITIES
-    -- ["Torment"] = {
-    --     ranks = {
-    --         [3716] = 45, --CONFIRMED
-    --         [7809] = 75, --CONFIRMED
-    --         [7810] = 125, --CONFIRMED
-    --         [7811] = 215, --CONFIRMED
-    --         [11774] = 300, --CONFIRMED
-    --         [11775] = 395, --CONFIRMED 
-    --     },
-    -- },
+--Create Firestone (Major)
+s[17953] = {onCast=true,threat=56}
 
-    -- ["Suffering"] = {
-    --     ranks = {
-    --         [17735] = 150, --CONFIRMED
-    --         [17750] = 300, --CONFIRMED
-    --         [17751] = 450, --CONFIRMED
-    --         [17752] = 600, --CONFIRMED 
-    --     },
-    -- },
-}
+--Create Spellstone
+s[2362]  = {onCast=true,threat=36}
+
+--Create Spellstone (Greater)
+s[17727] = {onCast=true,threat=48}
+
+--Create Spellstone (Major)
+s[17728] = {onCast=true,threat=60}
+
+--Detect Lesser Invisibility
+s[132]   = {onBuff=true,threat=26}
+
+--Detect Invisibility
+s[2970]  = {onBuff=true,threat=38}
+
+--Detect Greater Invisibility
+s[11743] = {onBuff=true,threat=50}
+
+--Eye of Kilrogg
+s[126]   = {onBuff=true,threat=22}
+
+--Shadow Ward
+s[6229]  = {onBuff=true,threat=32}
+s[11739] = {onBuff=true,threat=42}
+s[11740] = {onBuff=true,threat=52}
+s[28610] = {onBuff=true,threat=60}
 
 
 
