@@ -58,7 +58,7 @@ function prototype:scanEquipment()
 
     --Rockbiter
     if self._isLocal then
-        local newRockbiter = 0
+        local newRockbiterMH,newRockbiterOH = 0,0
         local hasMainHandEnchant, mainHandExpiration, mainHandCharges, mainHandEnchantID, hasOffHandEnchant, offHandExpiration, offHandCharges, offHandEnchantID = GetWeaponEnchantInfo()
         if hasMainHandEnchant then
             local speed = getSpeed(GetInventoryItemLink("player", 16))
@@ -71,33 +71,33 @@ function prototype:scanEquipment()
                  [683] = 6,
                 [1664] = 7,
             })[mainHandEnchantID]
-            local threat = rbThreat[rank] * speed
-            newRockbiter = math.floor(threat)
+            if rank then
+                local threat = rbThreat[rank] * speed
+                newRockbiterMH = math.floor(threat)
+            end
         end
-        if newRockbiter ~= self.rockbiter then
-            self.rockbiter = newRockbiter
+        if hasOffHandEnchant then
+            local speed = getSpeed(GetInventoryItemLink("player", 16))
+            local rank = ({
+                  [29] = 1,
+                   [6] = 2,
+                   [1] = 3,
+                 [503] = 4,
+                [1663] = 5,
+                 [683] = 6,
+                [1664] = 7,
+            })[offHandEnchantID]
+            if rank then
+                local threat = rbThreat[rank] * speed
+                newRockbiterOH = math.floor(threat)
+            end
+        end
+        if self.rockbiterMH ~= newRockbiterMH or self.rockbiterOH ~= newRockbiterOH then
+            self.rockbiterMH = newRockbiterMH
+            self.rockbiterOH = newRockbiterOH
             ATM:TransmitSelf(true) --always sends custom no need to update any timestamps
-            ATM:print("New rockbiter threat!", self.rockbiter)
+            ATM:print("New rockbiter threat!", self.rockbiterMH, self.rockbiterOH)
         end
-    end
-end
-
-function prototype:ENCHANT_APPLIED(...)
-    local spellName, itemID, itemName = select(12, ...)
-    local rank = tonumber(spellName:match("Rockbiter (%d+)"))
-    if rank then
-        local speed = getSpeed(itemID)
-        local threat = rbThreat[rank] * speed
-        self.rockbiter = math.floor(threat)
-        ATM:print("New rockbiter threat!", self.rockbiter)
-    end
-end
-function prototype:ENCHANT_REMOVED(...)
-    local spellName, itemID, itemName = select(12, ...)
-    local rank = tonumber(spellName:match("Rockbiter (%d+)"))
-    if rank then
-        self.rockbiter = 0
-        ATM:print("New rockbiter threat!", self.rockbiter)
     end
 end
 
@@ -105,16 +105,16 @@ function prototype:SWING_DAMAGE(...)
     ATM.Player.SWING_DAMAGE(self, ...) --call original handler
     
     local amount = select(12, ...)
+    local isOffHand = select(21, ...)
     if not amount or amount < 1 then return end
 
-    local bonusThreat = self.rockbiter
+    local bonusThreat = self.rockbiterMH + self.rockbiterOH
     if bonusThreat and bonusThreat > 0 then
         if C.debug then
-            self.currentEvent = {"[", self.color, self.name, "|r] ", "Rockbiter"}
+            self.currentEvent = {"[", self.color, self.name, "|r] ", "Rockbiter ", isOffHand and "OH" or "MH"}
         end
-
         local destGUID = select(8, ...)
-        self:addThreat(bonusThreat, destGUID)
+        self:addThreat(bonusThreat * self.threatBuffs[1], destGUID)
     end
 end
 --TODO localize Rockbiter enchant match (BOOST2_SHAMANENHANCE_REMIND_ROCKBITER?)
@@ -132,7 +132,8 @@ function prototype:UNIT_AURA()
 end
 
 prototype.classFields = ATM.toTrue({
-    'rockbiter',
+    'rockbiterMH',
+    'rockbiterOH',
 })
 
 --Earth Shock
@@ -151,6 +152,14 @@ s[25909] = {handler = ATM.BuffThreatMod({[127] = 0.8})}
     --[[ Season of Discovery ]]--
 --Way of Earth
 s[408680] = {handler = ATM.BuffThreatMod({[127] = 1.5})}
+--Earth Shock (Taunt)
+s[408681] = {threatMod=2.0,isTaunt=true,handler=ATM.Taunt}
+s[408683] = {threatMod=2.0,isTaunt=true,handler=ATM.Taunt}
+s[408685] = {threatMod=2.0,isTaunt=true,handler=ATM.Taunt}
+s[408687] = {threatMod=2.0,isTaunt=true,handler=ATM.Taunt}
+s[408688] = {threatMod=2.0,isTaunt=true,handler=ATM.Taunt}
+s[408689] = {threatMod=2.0,isTaunt=true,handler=ATM.Taunt}
+s[408690] = {threatMod=2.0,isTaunt=true,handler=ATM.Taunt}
 
 --Water Shield
 s[408510] = {ignored=true}

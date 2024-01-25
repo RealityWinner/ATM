@@ -633,6 +633,9 @@ function Player:SPELL_ENERGIZE(...)
     local spellID, spellName, spellSchool, amount, _, powerType = select(12, ...)
     -- print("SPELL_ENERGIZE", spellID, spellName, spellSchool, amount, powerType)
 
+    local spellData = ATM.spells[spellID]
+    if spellData and spellData.ignored then return end
+
     if powerType == ATM.PowerType.Mana then
         self:addThreat(amount * 0.5)
     elseif powerType == ATM.PowerType.Rage then

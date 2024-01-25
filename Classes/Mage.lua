@@ -43,7 +43,7 @@ s[1459]  = {onBuff=true,threat=1}
 s[1953]  = {onBuff=true,threat=20}
 
 --Counterspell
-s[1953]  = {onCast=true,threat=300}
+s[2139]  = {onCast=true,threat=300}
 
 --Dampen Magic
 s[10174] = {onBuff=true,threat=60}

@@ -178,7 +178,7 @@ function ATM:CHARACTER_POINTS_CHANGED()
 end
 
 function ATM:PLAYER_EQUIPMENT_CHANGED()
-	if InCombatLockdown() then return end
+	-- if InCombatLockdown() then return end
 
 	self:player():update()
 	if self:player().equipChange < self:GetTime() then return end
