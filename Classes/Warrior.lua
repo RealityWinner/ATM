@@ -36,10 +36,12 @@ function prototype:SPELL_AURA_APPLIED(...)
     local spellID, spellName = select(12, ...)
     if 2457 == spellID or 2458 == spellID or 23397 == spellID then --Battle/Berserker Stance
         ATM:print("[+]", self.name, "STANCE Battle/Berserk")
+        self.threatBuffs["Stance"] = nil
         self.threatBuffs["Stance"] = {[127] = 0.8}
         return
     elseif 71 == spellID then --Defensive Stance
         ATM:print("[+]", self.name, "STANCE Defensive")
+        self.threatBuffs["Stance"] = nil
         self.threatBuffs["Stance"] = {[127] = 1.3 * self.defianceMod}
         return
     end

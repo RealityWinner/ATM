@@ -673,7 +673,7 @@ function Player:AURA_THREAT(...)
     if not threat or (not spellData.onBuff and not spellData.onDebuff and not spellData.onAura) then return end
 
 
-    ATM:print("AURA_THREAT", spellName, spellID)
+    -- ATM:print("AURA_THREAT", spellName, spellID)
     local t = type(spellData.threatMod)
     if t == "number" then
         threat = threat * spellData.threatMod
