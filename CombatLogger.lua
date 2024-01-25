@@ -150,7 +150,6 @@ end
 
 -- UNIT_AURA triggers for self, party/raid members, targets, nameplate targets
 function CombatLogger:UNIT_AURA(unitTarget)
-	if true then return end
 	--TODO rewrite this to be better and track all players
 
 	-- if unitTarget == "player" then
@@ -160,15 +159,13 @@ function CombatLogger:UNIT_AURA(unitTarget)
 	-- 		if not spellID then break end
 	-- 		if spellID == 25909 then
 	-- 			--TODO apply the shaman talented threat reduction (20% -> 21.5% -> 23%)
-	-- 			ATM:player().threatBuffs[L[25909]] = 0.8
+	-- 			ATM:player().threatBuffs["Tranq Air"] = {[127] = 0.8}
 	-- 			return
 	-- 		end
 	-- 	end
 
-	-- 	--Not found, nil out. Check if name exists as we may not have spell names yet.
-	-- 	if L[25909] then
-	-- 		ATM:player().threatBuffs[L[25909]] = nil
-	-- 	end
+	-- 	--Not found, nil out
+	--  ATM:player().threatBuffs["Tranq Air"] = nil
 	-- end
 end
 

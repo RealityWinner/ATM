@@ -447,50 +447,6 @@ ATM.Player = Player
 
 
 
-function Player:SPELL_CAST_SUCCESS(...)
-    local spellID, spellName = select(12, ...)
-
-    --Checking if we care about the spell
-    local spellData = self.spells[spellName]
-	if spellData and spellData.type == "CAST" then
-        local timestamp, subevent, spellSchool, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _ = ...
-        -- ATM:print("SPELL_CAST_SUCCESS", timestamp, spellName)
-
-        local threat = ATM.spells[spellID].threat * self.threatBuffs[spellSchool]
-        if bit.band(destFlags, COMBATLOG_OBJECT_TYPE_PLAYER) > 0 then
-            self:addThreat(threat)
-        else
-            local enemy = ATM:getEnemy(destGUID)
-            if not enemy then
-                return print("[ATM] Bad enemy", spellName, sourceName, destName, destGUID)
-            end
-            enemy:setCombat(true)
-            self:addThreat(threat, destGUID)
-        end
-        return
-    end
-end
-
-function Player:SPELL_MISSED(...)
-    local timestamp, subevent, _, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _, spellID, spellName = ...
-    
-    local enemy = ATM:getEnemy(destGUID)
-    if enemy then
-        enemy:setCombat(true)
-    end
-
-    local spellData = self.spells[spellName]
-    if spellData and spellData.type == "CAST" then
-        local threat = ATM.spells[spellID].threat
-        if bit.band(destFlags, COMBATLOG_OBJECT_TYPE_PLAYER) > 0 then
-            self:addThreat(-threat) --can this happen?
-        else
-            self:addThreat(-threat, destGUID)
-        end
-    end
-end
-
-
 function Player:SWING_DAMAGE(...)
     local destGUID = select(8, ...)
 	local amount = select(12, ...)
@@ -525,6 +481,67 @@ function Player:RANGE_DAMAGE(...)
     self:addThreat(amount, destGUID)
 end
 
+
+function Player:SPELL_CAST_SUCCESS(...)
+    local spellID, spellName = select(12, ...)
+
+    --Checking if we care about the spell
+    local spellData = ATM.spells[spellName]
+	if spellData and spellData.onCast then
+        local timestamp, subevent, spellSchool, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _ = ...
+        -- ATM:print("SPELL_CAST_SUCCESS", timestamp, spellName)
+
+        local threat = spellData.threat * self.threatBuffs[spellSchool]
+        if spellData.threatMod then
+            if type(spellData.threatMod) == "function" then
+                threat = threat * spellData.threatMod(self)
+            else
+                threat = threat * spellData.threatMod
+            end
+        end
+
+        if bit.band(destFlags, COMBATLOG_OBJECT_CONTROL_PLAYER) > 0 then
+            self:addThreat(threat)
+        else
+            local enemy = ATM:getEnemy(destGUID)
+            if not enemy then
+                return print("[ATM] Bad enemy", spellName, sourceName, destName, destGUID)
+            end
+            enemy:setCombat(true)
+            self:addThreat(threat, destGUID)
+        end
+        return
+    end
+end
+
+function Player:SPELL_MISSED(...)
+    local timestamp, subevent, _, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _, spellID, spellName = ...
+    
+    local enemy = ATM:getEnemy(destGUID)
+    if enemy then
+        enemy:setCombat(true)
+    end
+
+    local spellData = ATM.spells[spellID]
+    if spellData and spellData.onCast then
+        local threat = spellData.threat * self.threatBuffs[spellSchool]
+        if spellData.threatMod then
+            if type(spellData.threatMod) == "function" then
+                threat = threat * spellData.threatMod(self)
+            else
+                threat = threat * spellData.threatMod
+            end
+        end
+
+        if bit.band(destFlags, COMBATLOG_OBJECT_CONTROL_PLAYER) > 0 then
+            self:addThreat(-threat) --can this happen?
+        else
+            self:addThreat(-threat, destGUID)
+        end
+    end
+end
+
+
 function Player:SPELL_DAMAGE(...)
 	local timestamp, subevent, _, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags = ...
 	local spellID, spellName, spellSchool, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing, isOffHand = select(12, ...)
@@ -533,23 +550,17 @@ function Player:SPELL_DAMAGE(...)
         self.currentEvent = self.currentEvent.." R:"..tostring(amount)
     end
     local threat = amount
-    local spellData = self.spells[spellName]
+    local spellData = ATM.spells[spellID]
     if spellData then
-        local t = type(spellData.threatMod)
-        if t == "number" then
-            threat = threat * spellData.threatMod
-            if C.debug then
-                self.currentEvent = self.currentEvent.." S:"..tostring(spellData.threatMod)
-            end
-        elseif t == "function" then
-            threat = threat * spellData.threatMod(self)
-            if C.debug then
-                self.currentEvent = self.currentEvent.." S:"..tostring(spellData.threatMod(self))
-            end
+        if spellData.onDamage and spellData.threat then
+            threat = threat + spellData.threat
         end
-
-        if not spellData.type or spellData.type ~= "DEBUFF" then
-            threat = threat + (spellData.threat or 0)
+        if spellData.threatMod then
+            if type(spellData.threatMod) == "function" then
+                threat = threat * spellData.threatMod(self)
+            else
+                threat = threat * spellData.threatMod
+            end
         end
     end
     
@@ -575,8 +586,8 @@ Player.DAMAGE_SHIELD = Player.SPELL_DAMAGE
 function Player:SPELL_HEAL(...)
 	local timestamp, subevent, _, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _, spellID, spellName, spellSchool, amount, overhealing, absorbed, critical = ...
 
-    -- Only care about healing done to Players (TODO: support pets/friendlies)
-    if bit.band(destFlags, COMBATLOG_OBJECT_TYPE_PLAYER) == 0 then
+    -- Only care about healing done to friendlies
+    if bit.band(destFlags, COMBATLOG_OBJECT_REACTION_FRIENDLY) == 0 then
         return
     end
 
@@ -586,12 +597,10 @@ function Player:SPELL_HEAL(...)
     
     local threat = (amount-overhealing) / 2.0
     
-    local spellData = self.spells[spellName]
+    local spellData = ATM.spells[spellID]
     if spellData then
         -- Ignore healing done from leech spells
-        if spellData.type == "LEECH" then
-            return
-        end
+        if spellData.isLeech then return end
 
         local t = type(spellData.threatMod)
         if t == "number" then
@@ -647,28 +656,23 @@ function Player:AURA_THREAT(...)
     local spellID, spellName, spellSchool, auraType, amount = select(12, ...)
 
     local spellData = ATM.spells[spellID]
-
     -- If this ability doesn't generate threat just ignore
-    if not spellData or spellData.type == "DAMAGE" or spellData.type == "CAST" then
+    if not spellData or (not spellData.onBuff and not spellData.onDebuff) then
         return
     end
 
     local enemy = ATM:getEnemy(destGUID)
-    if spellData.type == "CC" and bit.band(destFlags, COMBATLOG_OBJECT_TYPE_NPC) > 0 then
+    if enemy and spellData.isCC then
         enemy:setCC(spellName, true)
     end
-    if spellData.ignored then return end
     
-    if auraType == "DEBUFF" and bit.band(destFlags, COMBATLOG_OBJECT_TYPE_NPC) > 0 then
+    if enemy and auraType == "DEBUFF" then
         enemy:setCombat(true)
     end
 
 
-    local threat = spellData.threat
-    if not threat then return end
-
     -- ATM:print("AURA_THREAT", spellName, spellID)
-
+    local threat = spellData.threat
     local t = type(spellData.threatMod)
     if t == "number" then
         threat = threat * spellData.threatMod
@@ -686,16 +690,16 @@ function Player:AURA_THREAT(...)
     end
 
 
-    if threat then
-        if auraType == "BUFF" then
-            if bit.band(destFlags, COMBATLOG_OBJECT_TYPE_PLAYER) > 0 then
-                self:setCombat(ATM:getPlayer(destGUID):getCombat())
+    if auraType == "BUFF" then
+        if bit.band(destFlags, COMBATLOG_OBJECT_TYPE_PLAYER) > 0 then
+            if not self:getCombat() and ATM:getPlayer(destGUID):getCombat() then
+                self:setCombat(true)
             end
-            self:addThreat(threat)
-        elseif auraType == "DEBUFF" then
-            self:setCombat(true)
-            self:addThreat(threat, destGUID)
         end
+        self:addThreat(threat)
+    elseif auraType == "DEBUFF" then
+        self:setCombat(true)
+        self:addThreat(threat, destGUID)
     end
 end
 Player.SPELL_AURA_APPLIED = Player.AURA_THREAT
@@ -706,8 +710,8 @@ function Player:SPELL_AURA_REMOVED(...)
     local timestamp, subevent, _, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags = ...
     local spellID, spellName = select(12, ...)
 
-    local spellData = self.spells[spellName]
-    if not spellData or spellData.type ~= "CC" then return end
+    local spellData = ATM.spells[spellID]
+    if not spellData or not spellData.isCC then return end
     
     if bit.band(destFlags, COMBATLOG_OBJECT_TYPE_NPC) > 0 then
         local enemy = ATM:getEnemy(destGUID)
