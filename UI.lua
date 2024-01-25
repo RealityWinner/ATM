@@ -231,7 +231,7 @@ frame:SetScript("OnUpdate", function(self, elapsed)
 
 
             local idx=1
-            for _,player in orderedPairs(ATM._players, enemyGUID) do
+            for _,player in orderedPairs(ATM.groupUnits, enemyGUID) do
                 local bar = self.threatBars[idx]
                 if not bar then break end
 

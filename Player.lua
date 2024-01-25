@@ -499,14 +499,6 @@ function Player:SPELL_CAST_SUCCESS(...)
         -- ATM:print("SPELL_CAST_SUCCESS", timestamp, spellName)
 
         local threat = spellData.threat * self.threatBuffs[spellSchool]
-        if spellData.threatMod then
-            if type(spellData.threatMod) == "function" then
-                threat = threat * spellData.threatMod(self)
-            else
-                threat = threat * spellData.threatMod
-            end
-        end
-
         if not destGUID or bit.band(destFlags, COMBATLOG_OBJECT_CONTROL_PLAYER) > 0 then
             self:addThreat(threat)
         else

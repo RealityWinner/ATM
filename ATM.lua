@@ -61,6 +61,7 @@ function ATM:PLAYER_ENTERING_WORLD()
 		self.CombatLogger:Disable()
 	end
 
+	self:GROUP_ROSTER_UPDATE()
 	self:TransmitSelf()
 end
 
@@ -148,6 +149,9 @@ function ATM:GROUP_ROSTER_UPDATE()
 				self.groupUnits[n] = p
 			end
 		end
+		self.groupUnits["player"] = self._player
+	else
+		self.groupUnits["player"] = self._player
 	end
 end
 
@@ -732,7 +736,7 @@ function ATM:UnitDetailedThreatSituation(sourceUnit, destUnit)
 		end
 	end
 
-	return isTanking, status, threatpct, rawthreatpct, threatvalue > -1 and threatvalue or nil
+	return isTanking, status, threatpct, rawthreatpct, threatvalue and threatvalue > -1 and threatvalue or nil
 end
 
 
