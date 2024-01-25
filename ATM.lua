@@ -812,11 +812,11 @@ function ATM:EnableDebug()
 		end
 	else
 		ATM.print = function (self, ...)
-			local str = ""
-			for k,v in pairs({...}) do
-				str = str .. tostring(v) .. " "
+			local args = {...}
+			for k,v in ipairs(args) do
+				args[k] = tostring(v) or "nil"
 			end
-			ATM.debugChatFrame:AddMessage(str)
+			ATM.debugChatFrame:AddMessage(table.concat(args, " "))
 		end
 	end
 end

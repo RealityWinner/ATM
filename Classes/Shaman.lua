@@ -109,7 +109,9 @@ function prototype:SWING_DAMAGE(...)
 
     local bonusThreat = self.rockbiter
     if bonusThreat and bonusThreat > 0 then
-        self.currentEvent = "["..self.color..self.name.."|r] ".."Rockbiter"
+        if C.debug then
+            self.currentEvent = {"[", self.color, self.name, "|r] ", "Rockbiter"}
+        end
 
         local destGUID = select(8, ...)
         self:addThreat(bonusThreat, destGUID)

@@ -96,27 +96,27 @@ s[6190]  = {onDebuff=true,threat=0.8*24}
 s[1160]  = {onDebuff=true,threat=0.8*14}
 
 --Thunder Clap
-s[11581] = {threatMod=prototype.thunderClap}
-s[11580] = {threatMod=prototype.thunderClap}
-s[8205]  = {threatMod=prototype.thunderClap}
-s[8204]  = {threatMod=prototype.thunderClap}
-s[8198]  = {threatMod=prototype.thunderClap}
-s[6343]  = {threatMod=prototype.thunderClap}
+s[11581] = {onDamage=true,threatMod=prototype.thunderClap}
+s[11580] = {onDamage=true,threatMod=prototype.thunderClap}
+s[8205]  = {onDamage=true,threatMod=prototype.thunderClap}
+s[8204]  = {onDamage=true,threatMod=prototype.thunderClap}
+s[8198]  = {onDamage=true,threatMod=prototype.thunderClap}
+s[6343]  = {onDamage=true,threatMod=prototype.thunderClap}
 
 --Hamstring
-s[7373] = {threat=2.5*54,threatMod=1.25}
-s[7372] = {threat=2.5*32,threatMod=1.25}
-s[1715] = {threat=2.5*8,threatMod=1.25}
+s[7373] = {onDamage=true,threat=2.5*54,threatMod=1.25}
+s[7372] = {onDamage=true,threat=2.5*32,threatMod=1.25}
+s[1715] = {onDamage=true,threat=2.5*8,threatMod=1.25}
 
 --Shield Slam
-s[23925] = {threat=254}
-s[23924] = {threat=229}
-s[23923] = {threat=203}
-s[23922] = {threat=178}
+s[23925] = {onDamage=true,threat=254}
+s[23924] = {onDamage=true,threat=229}
+s[23923] = {onDamage=true,threat=203}
+s[23922] = {onDamage=true,threat=178}
 
 --Pummel
-s[6554]  = {threat=2 * 58}
-s[6552]  = {threat=2 * 38}
+s[6554]  = {onDamage=true,threat=2*58}
+s[6552]  = {onDamage=true,threat=2*38}
 
 --Overpower
 s[11585] = {threatMod=0.75}
@@ -132,35 +132,35 @@ s[7405]  = {onCast=true,threatMod=prototype.eightSetMight,threat=4.5 * 22}
 s[7386]  = {onCast=true,threatMod=prototype.eightSetMight,threat=4.5 * 10}
 
 --Heroic Strike
-s[25286] = {threat=175}
-s[11567] = {threat=145}
-s[11566] = {threat=118}
-s[11565] = {threat=87}
-s[11564] = {threat=65}
-s[1608]  = {threat=60}
-s[285]   = {threat=42}
-s[284]   = {threat=28}
-s[78]    = {threat=16}
+s[25286] = {onDamage=true,threat=175}
+s[11567] = {onDamage=true,threat=145}
+s[11566] = {onDamage=true,threat=118}
+s[11565] = {onDamage=true,threat=87}
+s[11564] = {onDamage=true,threat=65}
+s[1608]  = {onDamage=true,threat=60}
+s[285]   = {onDamage=true,threat=42}
+s[284]   = {onDamage=true,threat=28}
+s[78]    = {onDamage=true,threat=16}
 
 --Cleave
-s[20569] = {threat=1.5*60}
-s[11609] = {threat=1.5*50}
-s[11608] = {threat=1.5*40}
-s[7369]  = {threat=1.5*30}
-s[845]   = {threat=1.5*20}
+s[20569] = {onDamage=true,threat=1.5*60}
+s[11609] = {onDamage=true,threat=1.5*50}
+s[11608] = {onDamage=true,threat=1.5*40}
+s[7369]  = {onDamage=true,threat=1.5*30}
+s[845]   = {onDamage=true,threat=1.5*20}
 
 --Shield Bash
-s[1672]  = {threat=3*52,threatMod=1.5}
-s[1671]  = {threat=3*31,threatMod=1.5}
-s[72]    = {threat=3*12,threatMod=1.5}
+s[1672]  = {onDamage=true,threat=3*52,threatMod=1.5}
+s[1671]  = {onDamage=true,threat=3*31,threatMod=1.5}
+s[72]    = {onDamage=true,threat=3*12,threatMod=1.5}
 
 --Revenge
-s[25288] = {threat=4.5 * 60,threatMod=2.25}
-s[11601] = {threat=4.5 * 54,threatMod=2.25}
-s[11600] = {threat=4.5 * 44,threatMod=2.25}
-s[7379]  = {threat=4.5 * 34,threatMod=2.25}
-s[6574]  = {threat=4.5 * 24,threatMod=2.25}
-s[6572]  = {threat=4.5 * 14,threatMod=2.25}
+s[25288] = {onDamage=true,threat=4.5*60,threatMod=2.25}
+s[11601] = {onDamage=true,threat=4.5*54,threatMod=2.25}
+s[11600] = {onDamage=true,threat=4.5*44,threatMod=2.25}
+s[7379]  = {onDamage=true,threat=4.5*34,threatMod=2.25}
+s[6574]  = {onDamage=true,threat=4.5*24,threatMod=2.25}
+s[6572]  = {onDamage=true,threat=4.5*14,threatMod=2.25}
 
 --Revenge Stun
 s[12798] = {isCC=true,onDebuff=true,threat=25}
@@ -169,11 +169,11 @@ s[12798] = {isCC=true,onDebuff=true,threat=25}
 s[26651]  = {threatMod=1.25}
 
 --Mocking Blow
-s[20560]  = {isTaunt=true,threat=2 * 56}
-s[20559]  = {isTaunt=true,threat=2 * 46}
-s[7402]   = {isTaunt=true,threat=2 * 36}
-s[7400]   = {isTaunt=true,threat=2 * 26}
-s[694]    = {isTaunt=true,threat=2 * 16}
+s[20560]  = {isTaunt=true,onDamage=true,threat=2*56}
+s[20559]  = {isTaunt=true,onDamage=true,threat=2*46}
+s[7402]   = {isTaunt=true,onDamage=true,threat=2*36}
+s[7400]   = {isTaunt=true,onDamage=true,threat=2*26}
+s[694]    = {isTaunt=true,onDamage=true,threat=2*16}
 
 --Taunt
 s[355]    = {isTaunt=true,handler=ATM.Taunt}

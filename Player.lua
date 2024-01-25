@@ -290,7 +290,8 @@ end
 
 function Player:addThreat(amount, enemyGUID)
     if C.debug then
-        ATM:print(self.currentEvent.." T:"..tostring(amount).." E:"..(enemyGUID or "GLOBAL"))
+        ATM.insert(self.currentEvent, " T:", tostring(amount), " E:", (enemyGUID or "GLOBAL"))
+        ATM:print(table.concat({unpack(self.currentEvent)}))
     end
     self:_addThreat(amount, enemyGUID)
 end
@@ -420,6 +421,9 @@ function Player:UpdateThreat(destUnit)
                 -- self.globalThreatMod[destGUID] = 1/numInCombat
             elseif C.debug then
 				print("|cffFF0000[ATM] Threat API mismatch|r", mismatch, oldThreat, newThreat)
+                if ATM.debugChatFrame then
+                    ATM:print("|cffFF0000[ATM] Threat API mismatch|r", mismatch, oldThreat, newThreat)
+                end
 			end
 		end
 
@@ -451,7 +455,7 @@ function Player:SWING_DAMAGE(...)
 	local amount = select(12, ...)
 
     if C.debug then
-        self.currentEvent = self.currentEvent.." R:"..tostring(amount).." M:"..tostring(self.threatBuffs[1])
+        ATM.insert(self.currentEvent, " R:", tostring(amount), " M:", tostring(self.threatBuffs[1]))
     end
     amount = amount * self.threatBuffs[1]
 
@@ -468,7 +472,7 @@ function Player:RANGE_DAMAGE(...)
 	local amount = select(15, ...)
     
     if C.debug then
-        self.currentEvent = self.currentEvent.." R:"..tostring(amount).." M:"..tostring(self.threatBuffs[1])
+        ATM.insert(self.currentEvent, " R:", tostring(amount), " M:", tostring(self.threatBuffs[1]))
     end
     amount = amount * self.threatBuffs[1]
     
@@ -546,7 +550,7 @@ function Player:SPELL_DAMAGE(...)
 	local spellID, spellName, spellSchool, amount, overkill, school, resisted, blocked, absorbed, critical, glancing, crushing, isOffHand = select(12, ...)
 
     if C.debug then
-        self.currentEvent = self.currentEvent.." R:"..tostring(amount)
+        ATM.insert(self.currentEvent, " R:", tostring(amount))
     end
     local threat = amount
     local spellData = ATM.spells[spellID]
@@ -566,7 +570,7 @@ function Player:SPELL_DAMAGE(...)
     local schoolThreatMod = self.threatBuffs[spellSchool]
     threat = threat * schoolThreatMod
     if C.debug and schoolThreatMod ~= 1.0 then
-        self.currentEvent = self.currentEvent.." M:"..tostring(schoolThreatMod)
+        ATM.insert(self.currentEvent, " M:", tostring(schoolThreatMod))
     end
     
 
@@ -591,7 +595,7 @@ function Player:SPELL_HEAL(...)
     end
 
     if C.debug then
-        self.currentEvent = self.currentEvent.." R:"..tostring(amount-overhealing)
+        ATM.insert(self.currentEvent, " R:", tostring(amount-overhealing))
     end
     
     local threat = (amount-overhealing) / 2.0
@@ -605,12 +609,12 @@ function Player:SPELL_HEAL(...)
         if t == "number" then
             threat = threat * spellData.threatMod
             if C.debug then
-                self.currentEvent = self.currentEvent.." S:"..tostring(spellData.threatMod)
+                ATM.insert(self.currentEvent, " S:", tostring(spellData.threatMod))
             end
         elseif t == "function" then
             threat = threat * spellData.threatMod(self)
             if C.debug then
-                self.currentEvent = self.currentEvent.." S:"..tostring(spellData.threatMod(self))
+                ATM.insert(self.currentEvent, " S:", tostring(spellData.threatMod(self)))
             end
         end
     end
@@ -618,7 +622,7 @@ function Player:SPELL_HEAL(...)
     local schoolThreatMod = self.threatBuffs[spellSchool]
     threat = threat * schoolThreatMod
     if C.debug and schoolThreatMod ~= 1.0 then
-        self.currentEvent = self.currentEvent.." M:"..tostring(schoolThreatMod)
+        ATM.insert(self.currentEvent, " M:", tostring(schoolThreatMod))
     end
 
 
@@ -677,16 +681,19 @@ function Player:AURA_THREAT(...)
     if t == "number" then
         threat = threat * spellData.threatMod
         if C.debug then
-            self.currentEvent = self.currentEvent.." S:"..tostring(spellData.threatMod)
+            ATM.insert(self.currentEvent, " S:", tostring(spellData.threatMod))
         end
     elseif t == "function" then
         threat = threat * spellData.threatMod(self)
+        if C.debug then
+            ATM.insert(self.currentEvent, " S:", tostring(spellData.threatMod(self)))
+        end
     end
 
     local schoolThreatMod = self.threatBuffs[spellSchool]
     threat = threat * schoolThreatMod
     if C.debug and schoolThreatMod ~= 1.0 then
-        self.currentEvent = self.currentEvent.." M:"..tostring(schoolThreatMod)
+        ATM.insert(self.currentEvent, " M:", tostring(schoolThreatMod))
     end
 
 

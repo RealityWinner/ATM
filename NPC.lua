@@ -95,7 +95,7 @@ function NPC:setCC(spellName, isCC)
 end
 
 function NPC:GlobalThreatWipe()
-    ATM:print("ATM:NPC:GlobalThreatWipe", self.name, self.guid)
+    ATM:print("ATM:NPC:GlobalThreatWipe", self.name or "", self.guid)
     ATM:wipeThreat(self.guid)
 end
 function NPC:FullThreatDrop(...)

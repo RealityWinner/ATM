@@ -197,7 +197,7 @@ function CombatLogger:COMBAT_LOG_EVENT_UNFILTERED(...)
 		local player = ATM:getPlayer(sourceGUID)
 		if not player then return end
 		if C.debug then
-			player.currentEvent = "["..player.color..player.name.."|r] "..tostring(spellName)
+			player.currentEvent = {"[", player.color, player.name, "|r] ", tostring(spellName)}
 		end
 
 		local spellData = ATM.spells[spellID]
@@ -225,7 +225,7 @@ function CombatLogger:COMBAT_LOG_EVENT_UNFILTERED(...)
 		local player = ATM:getPlayer(destGUID)
 		if not player then return end
 		if C.debug then
-			player.currentEvent = "["..player.color..player.name.."|r] "..tostring(spellName)
+			player.currentEvent = {"[", player.color, player.name, "|r] ", tostring(spellName)}
 		end
 
 		local spellData = player.spells[spellName]

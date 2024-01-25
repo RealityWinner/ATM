@@ -25,6 +25,11 @@ end
 function ATM.ends_with(str, ending)
 	return str:sub(-#ending, -1) == ending
 end
+function ATM.insert(list, ...)
+	for i, v in ipairs({...}) do
+	  list[#list+1] = v
+	end
+  end
 function ATM.toTrue(tbl)
 	local out = {}
 	for _,v in pairs(tbl) do
