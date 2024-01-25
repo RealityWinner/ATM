@@ -654,25 +654,26 @@ Player.SPELL_PERIODIC_ENERGIZE = Player.SPELL_ENERGIZE
 function Player:AURA_THREAT(...)
 	local timestamp, subevent, _, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags = ...
     local spellID, spellName, spellSchool, auraType, amount = select(12, ...)
-
     local spellData = ATM.spells[spellID]
-    -- If this ability doesn't generate threat just ignore
-    if not spellData or (not spellData.onBuff and not spellData.onDebuff) then
-        return
-    end
-
     local enemy = ATM:getEnemy(destGUID)
-    if enemy and spellData.isCC then
+
+    --Set CC; CC'd enemies ignore global threat
+    if enemy and spellData and spellData.isCC then
         enemy:setCC(spellName, true)
     end
-    
+
+    --Ability generates no threat, return and don't set +combat
+    if spellData and spellData.ignored then return end
     if enemy and auraType == "DEBUFF" then
         enemy:setCombat(true)
     end
 
+    --No threat data, return
+    local threat = spellData and spellData.threat
+    if not threat or (not spellData.onBuff and not spellData.onDebuff and not spellData.onAura) then return end
 
-    -- ATM:print("AURA_THREAT", spellName, spellID)
-    local threat = spellData.threat
+
+    ATM:print("AURA_THREAT", spellName, spellID)
     local t = type(spellData.threatMod)
     if t == "number" then
         threat = threat * spellData.threatMod

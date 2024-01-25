@@ -70,28 +70,28 @@ s[20616]  = {ignored=true}
 s[20252]  = {ignored=true}
 
 --Intercept Stun
-s[20615]  = {isCC=true, threatMod=2.0}
-s[20614]  = {isCC=true, threatMod=2.0}
-s[20253]  = {isCC=true, threatMod=2.0}
+s[20615]  = {isCC=true,threatMod=2.0}
+s[20614]  = {isCC=true,threatMod=2.0}
+s[20253]  = {isCC=true,threatMod=2.0}
 
 --Intimidating Shout
 s[5246]  = {isCC=true} --, onDebuff=true, threat=?
 
 --Battle Shout
-s[25289] = {threat=60}
-s[11551] = {threat=52}
-s[11550] = {threat=42}
-s[11549] = {threat=32}
-s[6192]  = {threat=22}
-s[5242]  = {threat=12}
-s[6673]  = {threat=1}
+s[25289] = {onBuff=true,threat=60}
+s[11551] = {onBuff=true,threat=52}
+s[11550] = {onBuff=true,threat=42}
+s[11549] = {onBuff=true,threat=32}
+s[6192]  = {onBuff=true,threat=22}
+s[5242]  = {onBuff=true,threat=12}
+s[6673]  = {onBuff=true,threat=1}
 
 --Demoralizing Shout
-s[11556] = {threat=0.8*54}
-s[11555] = {threat=0.8*44}
-s[11554] = {threat=0.8*34}
-s[6190]  = {threat=0.8*24}
-s[1160]  = {threat=0.8*14}
+s[11556] = {onDebuff=true,threat=0.8*54}
+s[11555] = {onDebuff=true,threat=0.8*44}
+s[11554] = {onDebuff=true,threat=0.8*34}
+s[6190]  = {onDebuff=true,threat=0.8*24}
+s[1160]  = {onDebuff=true,threat=0.8*14}
 
 --Thunder Clap
 s[11581] = {threatMod=prototype.thunderClap}

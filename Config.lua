@@ -8,8 +8,8 @@ C.VERSION = 1
 -- The oldest sync version we support
 C.MINVER = 1
 
-C.debug = false
-C.enabled = false
+C.debug = true
+C.enabled = true
 
 C.UIInterval = 0.1
 

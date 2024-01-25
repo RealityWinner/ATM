@@ -663,7 +663,7 @@ local function findTank(enemyUnit)
 			return
 		end
 
-		for playerUnit in pairs(self.groupUnits) do
+		for playerUnit in pairs(ATM.groupUnits) do
 			isTanking = UnitDetailedThreatSituation(playerUnit, enemyUnit)
 			if isTanking then
 				enemy.tankGUID = UnitGUID(playerUnit)
