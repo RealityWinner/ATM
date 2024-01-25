@@ -33,12 +33,10 @@ function prototype:SPELL_AURA_APPLIED(...)
     local spellID, spellName = select(12, ...)
     if 5487 == spellID or 9634 == spellID then --Bear Forms
         ATM:print("[+]", self.name, "STANCE Bear")
-        self.threatBuffs["Form"] = nil
         self.threatBuffs["Form"] = {[127] = 1.3 + self.feralinstinctMod}
         return
     elseif 768 == spellID or 23398 == spellID then --Cat Form
         ATM:print("[+]", self.name, "STANCE Cat")
-        self.threatBuffs["Form"] = nil
         self.threatBuffs["Form"] = {[127] = 0.71}
         return
     end

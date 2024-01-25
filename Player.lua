@@ -165,7 +165,11 @@ end
 
 function Player:scanEquipment()
     if self._isLocal then
-        for i = 0, 19 do
+        local start,finish = 0, 19
+        if InCombatLockdown() then
+            start,finish = 16,18
+        end
+        for i=start,finish do
             local itemLink = GetInventoryItemLink("player", i)
             if itemLink then
                 local itemId, enchantId = itemLink:match("item:(%d+):(%d-):")
@@ -489,7 +493,7 @@ function Player:SPELL_CAST_SUCCESS(...)
     local spellID, spellName = select(12, ...)
 
     --Checking if we care about the spell
-    local spellData = ATM.spells[spellName]
+    local spellData = ATM.spells[spellID]
 	if spellData and spellData.onCast then
         local timestamp, subevent, spellSchool, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _ = ...
         -- ATM:print("SPELL_CAST_SUCCESS", timestamp, spellName)
@@ -503,7 +507,7 @@ function Player:SPELL_CAST_SUCCESS(...)
             end
         end
 
-        if bit.band(destFlags, COMBATLOG_OBJECT_CONTROL_PLAYER) > 0 then
+        if not destGUID or bit.band(destFlags, COMBATLOG_OBJECT_CONTROL_PLAYER) > 0 then
             self:addThreat(threat)
         else
             local enemy = ATM:getEnemy(destGUID)

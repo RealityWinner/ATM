@@ -119,6 +119,17 @@ function prototype:SWING_DAMAGE(...)
 end
 --TODO localize Rockbiter enchant match (BOOST2_SHAMANENHANCE_REMIND_ROCKBITER?)
 
+function prototype:UNIT_AURA()
+    for i=1,999 do
+        local name, icon, count, debuffType, duration, expirationTime, source, isStealable, nameplateShowPersonal, spellID = UnitBuff("player", i)
+        if not spellID then break end
+        if spellID == 408680 then
+            self.threatBuffs["Way of Earth"] = {[127] = 1.5}
+            return
+        end
+    end
+    self.threatBuffs["Way of Earth"] = nil
+end
 
 prototype.classFields = ATM.toTrue({
     'rockbiter',
@@ -133,7 +144,13 @@ s[8045]  = {threatMod=2.0}
 s[8044]  = {threatMod=2.0}
 s[8042]  = {threatMod=2.0}
 
+--Tranquil Air
+s[25909] = {handler = ATM.BuffThreatMod({[127] = 0.8})}
 
---[[ Season of Discovery ]]--
+
+    --[[ Season of Discovery ]]--
 --Way of Earth
 s[408680] = {handler = ATM.BuffThreatMod({[127] = 1.5})}
+
+--Water Shield
+s[408510] = {ignored=true}

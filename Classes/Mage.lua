@@ -17,6 +17,7 @@ function prototype:scanTalents()
     self.threatBuffs["Frost Channeling"] = {[16] = 1 - 0.1 * self:GetTalent(3, 12)}
     --Burning Soul
     self.threatBuffs["Burning Soul"] = {[4]  = 1 - 0.15 * self:GetTalent(2, 9)}
+    rawset(self.threatBuffs, '__value', nil) --force update
 end
 
 --Clearcasting

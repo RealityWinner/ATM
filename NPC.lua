@@ -158,7 +158,7 @@ ATM.NPC = NPC
 function NPC:SPELL_AURA(...)
     local spellID, spellName = select(12, ...)
     --Checking if we care about the spell
-    local spellData = self.spells[spellName]
+    local spellData = ATM.spells[spellID]
 	if not spellData or spellData.type ~= "DEBUFF" then
 		return
     end
@@ -175,7 +175,7 @@ NPC.SPELL_AURA_APPLIED_DOSE = NPC.SPELL_AURA
 function NPC:SPELL_DAMAGE(...)    
     local spellID, spellName = select(12, ...)
     --Checking if we care about the spell
-    local spellData = self.spells[spellName]
+    local spellData = ATM.spells[spellID]
 	if not spellData or spellData.type ~= "DAMAGE" then
 		return
     end
@@ -188,7 +188,7 @@ end
 function NPC:SPELL_CAST_SUCCESS(...)
     local spellID, spellName = select(12, ...)
     --Checking if we care about the spell
-    local spellData = self.spells[spellName]
+    local spellData = ATM.spells[spellID]
 	if not spellData or spellData.type ~= "CAST" then
 		return
     end
@@ -201,7 +201,7 @@ end
 function NPC:SPELL_MISSED(...)
     local spellID, spellName = select(12, ...)
     --Checking if we care about the spell
-    local spellData = self.spells[spellName]
+    local spellData = ATM.spells[spellID]
 	if not spellData then
 		return
     end

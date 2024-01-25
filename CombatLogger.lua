@@ -149,7 +149,14 @@ end
 
 
 -- UNIT_AURA triggers for self, party/raid members, targets, nameplate targets
-function CombatLogger:UNIT_AURA(unitTarget)
+function CombatLogger:UNIT_AURA(unit)
+	local player = ATM:getPlayer(UnitGUID(unit))
+	if player and player.UNIT_AURA then
+		player:UNIT_AURA()
+	end
+
+
+
 	--TODO rewrite this to be better and track all players
 
 	-- if unitTarget == "player" then
@@ -228,7 +235,7 @@ function CombatLogger:COMBAT_LOG_EVENT_UNFILTERED(...)
 			player.currentEvent = {"[", player.color, player.name, "|r] ", tostring(spellName)}
 		end
 
-		local spellData = player.spells[spellName]
+		local spellData = ATM.spells[spellID]
 		if spellData and spellData.ignored then
 			return
 		end

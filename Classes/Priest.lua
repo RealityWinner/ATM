@@ -16,9 +16,10 @@ function prototype:scanTalents()
     --Silent Resolve (98)
     local silentResolve = 1 - 0.4 * self:GetTalent(1, 3)
     if silentResolve < 1 then
-        self.threatBuffs["Priest - Silent Resolve"] = { [98] = silentResolve } --Holy, Shadow, Arcane
+        self.threatBuffs["Silent Resolve"] = { [98] = silentResolve } --Holy, Shadow, Arcane
+        rawset(self.threatBuffs, '__value', nil) --force update
     else
-        self.threatBuffs["Priest - Silent Resolve"] = nil
+        self.threatBuffs["Silent Resolve"] = nil
     end
 
     --Shadow Affinity
