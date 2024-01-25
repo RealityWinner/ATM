@@ -9,6 +9,11 @@ local ATM, C, L, _ = unpack(select(2, ...))
 function ATM:Taunt(...)
 	local _, subevent, _, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _ = ...
 
+    local p = self[subevent]
+    if p then
+        return p(self, ...)
+    end
+
 	if subevent == "SPELL_AURA_APPLIED" then
 		local enemy = ATM:getEnemy(destGUID)
 		if enemy and enemy.tankGUID and enemy.tankGUID ~= self.guid then
@@ -18,11 +23,6 @@ function ATM:Taunt(...)
 			end
 		end
 	end
-
-    local p = self[subevent]
-    if p then
-        return p(self, ...)
-    end
 end
 
 -- 3/26 01:05:06.962  SPELL_CAST_START,Player-4410-01C994F7,"Player-Server",0x512,0x0,0000000000000000,nil,0x80000000,0x80000000,10912,"Mind Control",0x20
