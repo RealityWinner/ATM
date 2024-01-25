@@ -14,66 +14,36 @@ function prototype:scanTalents()
     self.threatBuffs["Rogue"] = {[127] = 0.71}
 end
 
-prototype.spells = {
-    ["Feint"] = {
-        ranks = {
-            [25302] = ATM.Player.levelBasedThreat(-800, -1, 60, 60), --maxLevel is technically 70
-            [11303] = ATM.Player.levelBasedThreat(-600, -1, 52, 60), --maxLevel is technically 62
-             [8637] = ATM.Player.levelBasedThreat(-390, -1, 40, 50),
-             [6768] = ATM.Player.levelBasedThreat(-240, -1, 28, 38),
-             [1966] = ATM.Player.levelBasedThreat(-150, -1, 16, 26),
-        },
-    },
 
-    ["Vanish"] = {
-        ranks = {
-            1857,
-            1856,
-        },
-        type = "CAST",
-        handler = ATM.Player.wipeThreat
-    },
+--Feint
+s[25302] = {handler=ATM.Player.levelBasedThreat(-800, -1, 60, 60)} --maxLevel is technically 70
+s[11303] = {handler=ATM.Player.levelBasedThreat(-600, -1, 52, 60)} --maxLevel is technically 62
+s[8637]  = {handler=ATM.Player.levelBasedThreat(-390, -1, 40, 50)}
+s[6768]  = {handler=ATM.Player.levelBasedThreat(-240, -1, 28, 38)}
+s[1966]  = {handler=ATM.Player.levelBasedThreat(-150, -1, 16, 26)}
 
-    
+--Vanish
+s[1857] = {handler=ATM.Player.wipeThreat}
+s[1856] = {handler=ATM.Player.wipeThreat}
 
-    ["Cheap Shot"] = {
-        ranks = {
-            1833,
-        },
-        type = "CC",
-    },
-    ["Kidney Shot"] = {
-        ranks = {
-            [8643] = 100,
-            [408] = 50,
-        },
-        type = "CC",
-    },
-    ["Gouge"] = {
-        ranks = {
-            11286,
-            11285,
-            8629,
-            1777,
-            1776,
-        },
-        type = "CC",
-    },
-    ["Blind"] = {
-        ranks = {
-            [2094] = 68,
-        },
-        type = "CC",
-    },
+--Cheap Shot
+s[1833] = {isCC=true}
+
+--Kidney Shot
+s[8643] = {isCC=true,onDebuff=true,threat=100}
+s[408]  = {isCC=true,onDebuff=true,threat=50}
+
+--Gouge
+s[11286] = {isCC=true}
+s[11285] = {isCC=true}
+s[8629]  = {isCC=true}
+s[1777]  = {isCC=true}
+s[1776]  = {isCC=true}
+
+--Blind
+s[2094] = {isCC=true,onDebuff=true,threat=68}
 
 
-    
     --[[ Season of Discovery ]]--
-    ["Tease"] = {
-        ranks = {
-            410412
-        },
-        handler = ATM.Taunt,
-    },
-    --TODO: Just a Flesh Wound
-}
+--Tease
+s[410412] = {handler=ATM.Taunt}
