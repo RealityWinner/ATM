@@ -19,12 +19,18 @@ ATM = ns[1]
 
 
 -- Helpers
+local band = bit.band
+function ATM.band(number, match)
+	return band(number, match) == match
+end
+
 function ATM.starts_with(str, start)
 	return str:sub(1, #start) == start
 end
 function ATM.ends_with(str, ending)
 	return str:sub(-#ending, -1) == ending
 end
+
 function ATM.insert(list, ...)
 	for i, v in ipairs({...}) do
 	  list[#list+1] = v

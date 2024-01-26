@@ -48,7 +48,7 @@ local function MindExhaustion(...)
 	local _, subevent, _, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _ = ...
     if subevent == "SPELL_AURA_APPLIED" then
         ATM:wipeThreat(sourceGUID)
-        ATM:getPlayer(destGUID):setThreat(449700, sourceGUID)
+        ATM:GetPlayer(destGUID):setThreat(449700, sourceGUID)
     end
 end
 s[23958] = {handler=MindExhaustion}
@@ -123,7 +123,7 @@ s[414370] = {onCast=true, threat=ATM.NPC.FullThreatDrop}
 --Kelris - Sleep
 s[423135] = {handler=function(self, ...)
     local _, subevent, _, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _ = ...
-    local player = ATM:getPlayer(destGUID)
+    local player = ATM:GetPlayer(destGUID)
     if player then
         player:wipeThreat()
     end

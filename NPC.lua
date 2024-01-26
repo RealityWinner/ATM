@@ -113,7 +113,7 @@ end
 function NPC:ZeroThreatDrop(...)
 end
 function NPC:ReduceThreat(destGUID, amountPct)
-    local player = ATM:getPlayer(destGUID)
+    local player = ATM:GetPlayer(destGUID)
     if not player then return end
 
     player:_addThreat(player:getThreat(self.guid) * -amountPct, self.guid)
@@ -231,7 +231,7 @@ setmetatable(ATM._enemies, {
     __mode = "k", --weak
 });
 
-function ATM:getEnemy(enemyGUID, skipCreate)
+function ATM:GetEnemy(enemyGUID, skipCreate)
     local enemy = rawget(self._enemies, enemyGUID)
     if enemy then enemy.lastAccess = self:GetTime() end
     if enemy or skipCreate then return enemy end

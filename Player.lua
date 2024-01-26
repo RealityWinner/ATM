@@ -20,9 +20,9 @@ setmetatable(ATM._players, {
     __mode = "k", --weak
 });
 
-function ATM:getPlayer(playerGUID, skipCreate)
+function ATM:GetPlayer(playerGUID, skipCreate)
     if not playerGUID then return end
-    -- self:print("ATM:getPlayer", playerGUID)
+    -- self:print("ATM:GetPlayer", playerGUID)
 
     local player = rawget(self._players, playerGUID)
     if player or skipCreate then return player end
@@ -316,7 +316,7 @@ function Player:_addThreat(amount, enemyGUID)
         ATM._threat[self.guid][enemyGUID] = newThreat
         ATM._threat[enemyGUID][self.guid] = newThreat
 
-        local enemy = ATM:getEnemy(enemyGUID)
+        local enemy = ATM:GetEnemy(enemyGUID)
         if enemy and enemy.tankGUID == self.guid then
             enemy.tankThreat = newThreat
         end
@@ -342,7 +342,7 @@ function Player:_addThreat(amount, enemyGUID)
                 ATM._threat[self.guid][enemyGUID] = newThreat
                 ATM._threat[enemyGUID][self.guid] = newThreat
 
-                local enemy = ATM:getEnemy(enemyGUID)
+                local enemy = ATM:GetEnemy(enemyGUID)
                 if enemy and enemy.tankGUID == self.guid then
                     enemy.tankThreat = newThreat
                 end
@@ -363,7 +363,7 @@ function Player:setThreat(amount, enemyGUID)
         self.globalThreat[enemyGUID] = nil
     end
 
-    local enemy = ATM:getEnemy(enemyGUID)
+    local enemy = ATM:GetEnemy(enemyGUID)
     if enemy and enemy.tankGUID == self.guid then
         enemy.tankThreat = amount
     end
@@ -390,7 +390,7 @@ function Player:UpdateThreat(destUnit)
 
 	local isTanking, status, threatpct, rawthreatpct, threatvalue = UnitDetailedThreatSituation(selfUnit, destUnit)
 	if threatvalue then
-        local enemy = ATM:getEnemy(destGUID)
+        local enemy = ATM:GetEnemy(destGUID)
         if enemy and not enemy.seenAPI and threatvalue > 0 then
             enemy.seenAPI = true
         end
@@ -464,7 +464,7 @@ function Player:SWING_DAMAGE(...)
     amount = amount * self.threatBuffs[1]
 
     self:setCombat(true)
-    local enemy = ATM:getEnemy(destGUID)
+    local enemy = ATM:GetEnemy(destGUID)
     if enemy then
         enemy:setCombat(true)
     end
@@ -481,7 +481,7 @@ function Player:RANGE_DAMAGE(...)
     amount = amount * self.threatBuffs[1]
     
     self:setCombat(true)
-    local enemy = ATM:getEnemy(destGUID)
+    local enemy = ATM:GetEnemy(destGUID)
     if enemy then
         enemy:setCombat(true)
     end
@@ -502,7 +502,7 @@ function Player:SPELL_CAST_SUCCESS(...)
         if not destGUID or bit.band(destFlags, COMBATLOG_OBJECT_CONTROL_PLAYER) > 0 then
             self:addThreat(threat)
         else
-            local enemy = ATM:getEnemy(destGUID)
+            local enemy = ATM:GetEnemy(destGUID)
             if not enemy then
                 return print("[ATM] Bad enemy", spellName, sourceName, destName, destGUID)
             end
@@ -516,7 +516,7 @@ end
 function Player:SPELL_MISSED(...)
     local timestamp, subevent, _, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _, spellID, spellName = ...
     
-    local enemy = ATM:getEnemy(destGUID)
+    local enemy = ATM:GetEnemy(destGUID)
     if enemy then
         enemy:setCombat(true)
     end
@@ -569,7 +569,7 @@ function Player:SPELL_DAMAGE(...)
     
 
     self:setCombat(true)
-    local player = ATM:getEnemy(destGUID)
+    local player = ATM:GetEnemy(destGUID)
     if player then
         player:setCombat(true)
     end
@@ -620,7 +620,7 @@ function Player:SPELL_HEAL(...)
     end
 
 
-    local player = ATM:getPlayer(destGUID)
+    local player = ATM:GetPlayer(destGUID)
     if player and player:getCombat() then
         self:setCombat(true)
     end
@@ -655,7 +655,7 @@ function Player:AURA_THREAT(...)
 	local timestamp, subevent, _, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags = ...
     local spellID, spellName, spellSchool, auraType, amount = select(12, ...)
     local spellData = ATM.spells[spellID]
-    local enemy = ATM:getEnemy(destGUID)
+    local enemy = ATM:GetEnemy(destGUID)
 
     --Set CC; CC'd enemies ignore global threat
     if enemy and spellData and spellData.isCC then
@@ -696,7 +696,7 @@ function Player:AURA_THREAT(...)
 
     if auraType == "BUFF" then
         if bit.band(destFlags, COMBATLOG_OBJECT_TYPE_PLAYER) > 0 then
-            if not self:getCombat() and ATM:getPlayer(destGUID):getCombat() then
+            if not self:getCombat() and ATM:GetPlayer(destGUID):getCombat() then
                 self:setCombat(true)
             end
         end
@@ -717,7 +717,7 @@ function Player:SPELL_AURA_REMOVED(...)
     local spellData = ATM.spells[spellID]
     if not spellData or not spellData.isCC then return end
     
-    local enemy = ATM:getEnemy(destGUID, true)
+    local enemy = ATM:GetEnemy(destGUID, true)
     if enemy then
         enemy:setCC(spellName, false)
         enemy.lastThreatUpdate = ATM:GetTime() --ignore threat updates while still CC'd
