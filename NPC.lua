@@ -257,14 +257,6 @@ function ATM:enemies()
 end
 
 
--- -- TESTING --
--- local Earthborer = {
---     spells = {
---         ["Earthborer Acid"] = {
---             id = 18070,
---             type = "CAST",
---             handler = ATM.NPC.QuarterThreatDrop
---         }
---     }
--- }
--- ATM.NPCs[11320] = Earthborer
+--[[ TESTING ]]--
+--Earthborer
+-- s[18070] = {onCast=true,handler=ATM.NPC.QuarterThreatDrop}

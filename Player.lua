@@ -115,13 +115,6 @@ function Player:init()
     });
 end
 
-function Player:setGUID(guid)
-    self.guid = guid
-end
-function Player:getGUID()
-    return self.guid
-end
-
 function Player:setName(name)
     self.name = name
 end
@@ -270,18 +263,6 @@ function Player:GetTalent(x,y)
         return self._talents[x] and self._talents[x][y] or 0
     end
 end
-
-function Player:getCombat()
-    return self.inCombat
-end
-
-function Player:setCombat(newCombat)
-    if not newCombat and self.inCombat then
-		self:wipeThreat()
-    end
-    self.inCombat = newCombat
-end
-
 
 
 function Player:getThreat(enemyGUID, skipCreate)
@@ -486,50 +467,6 @@ function Player:RANGE_DAMAGE(...)
         enemy:setCombat(true)
     end
     self:addThreat(amount, destGUID)
-end
-
-
-function Player:SPELL_CAST_SUCCESS(...)
-    local spellID, spellName = select(12, ...)
-
-    --Checking if we care about the spell
-    local spellData = ATM.spells[spellID]
-	if spellData and spellData.onCast then
-        local timestamp, subevent, spellSchool, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _ = ...
-        -- ATM:print("SPELL_CAST_SUCCESS", timestamp, spellName)
-
-        local threat = spellData.threat * self.threatBuffs[spellSchool]
-        if not destGUID or bit.band(destFlags, COMBATLOG_OBJECT_CONTROL_PLAYER) > 0 then
-            self:addThreat(threat)
-        else
-            local enemy = ATM:GetEnemy(destGUID)
-            if not enemy then
-                return print("[ATM] Bad enemy", spellName, sourceName, destName, destGUID)
-            end
-            enemy:setCombat(true)
-            self:addThreat(threat, destGUID)
-        end
-        return
-    end
-end
-
-function Player:SPELL_MISSED(...)
-    local timestamp, subevent, _, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _, spellID, spellName = ...
-    
-    local enemy = ATM:GetEnemy(destGUID)
-    if enemy then
-        enemy:setCombat(true)
-    end
-
-    local spellData = ATM.spells[spellID]
-    if spellData and spellData.onCast then
-        local threat = spellData.threat * self.threatBuffs[spellSchool]
-        if bit.band(destFlags, COMBATLOG_OBJECT_CONTROL_PLAYER) > 0 then
-            self:addThreat(-threat) --can this happen?
-        else
-            self:addThreat(-threat, destGUID)
-        end
-    end
 end
 
 
