@@ -11,7 +11,7 @@ function ATM:Taunt(...)
 
     local p = self[subevent]
     if p then
-        return p(self, ...)
+        p(self, ...)
     end
 
 	if subevent == "SPELL_AURA_APPLIED" then

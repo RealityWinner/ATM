@@ -192,7 +192,7 @@ frame.title:SetPoint("TOPRIGHT", -6, 5)
 frame.title:SetHeight(12)
 frame.title:SetJustifyV("TOP");
 frame.title:SetJustifyH("LEFT");
-frame.title:SetText("ATM "..C.DISPLAY)
+frame.title:SetText("ATM v"..C.DISPLAY)
 
 ATM.UI = frame
 
@@ -224,9 +224,9 @@ frame:SetScript("OnUpdate", function(self, elapsed)
         end
 
 
-        ATM.UI.title:SetText("ATM "..C.DISPLAY)
+        ATM.UI.title:SetText("ATM v"..C.DISPLAY)
         if UnitCanAttack("player", unit) then
-            ATM.UI.title:SetText("ATM "..C.DISPLAY..": "..UnitName(unit))
+            ATM.UI.title:SetText("ATM v"..C.DISPLAY..": "..UnitName(unit))
             local enemyGUID = UnitGUID(unit)
 
 
