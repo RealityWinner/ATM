@@ -142,4 +142,4 @@ s[28610] = {onBuff=true,threat=60}
 
     --[[ Season of Discovery ]]--
 --Metamorphosis
-s[403789] = {handler=ATM.BuffThreatMod({[127] = 1.5})}
+s[403789] = {handler=ATM:BuffThreatMod({[127] = 1.5})}

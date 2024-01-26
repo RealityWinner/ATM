@@ -133,12 +133,12 @@ s[8044]  = {threatMod=2.0}
 s[8042]  = {threatMod=2.0}
 
 --Tranquil Air
-s[25909] = {handler = ATM.BuffThreatMod({[127] = 0.8})}
+s[25909] = {handler = ATM:BuffThreatMod({[127] = 0.8})}
 
 
     --[[ Season of Discovery ]]--
 --Way of Earth
-s[408680] = {handler = ATM.BuffThreatMod({[127] = 1.5})}
+s[408680] = {handler = ATM:BuffThreatMod({[127] = 1.5})}
 --Earth Shock (Taunt)
 s[408681] = {threatMod=2.0,isTaunt=true,handler=ATM.Taunt}
 s[408683] = {threatMod=2.0,isTaunt=true,handler=ATM.Taunt}

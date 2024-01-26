@@ -52,42 +52,42 @@ s[5677]   = {ignored=true}
 
 
 -- Fetish of the Sand Reaver (26400 Arcane Shroud -70%)
-s[26400]  = {handler = ATM.BuffThreatMod({[127] = 0.3})}
+s[26400]  = {handler = ATM:BuffThreatMod({[127] = 0.3})}
 
 -- Fungal Bloom - Loatheb (29232 0%)
-s[29232]  = {handler = ATM.BuffThreatMod({[127] = 0})}
+s[29232]  = {handler = ATM:BuffThreatMod({[127] = 0})}
 
 -- Burning Adrenaline -75%; Don't believe this is real, is not hidden from combat log and doesn't show up in combat log
--- s[24701]  = {handler = ATM.BuffThreatMod({[127] = 0.25})}
+-- s[24701]  = {handler = ATM:BuffThreatMod({[127] = 0.25})}
 
 -- Frostfire Regalia (Mage T3) 8 set bonus (28762 Not There 0%)
-s[28762]  = {handler = ATM.BuffThreatMod({[127] = 0})}
+s[28762]  = {handler = ATM:BuffThreatMod({[127] = 0})}
 
 -- Eye of Diminution (28862 -35%)
-s[28862]  = {handler = ATM.BuffThreatMod({[127] = 0.65})}
+s[28862]  = {handler = ATM:BuffThreatMod({[127] = 0.65})}
 
 --Paladin Salvation
-s[25895]  = {handler = ATM.BuffThreatMod({[127] = 0.7})} --Blessing of Salvation
-s[1038]   = {handler = ATM.BuffThreatMod({[127] = 0.7})} --Greater Blessing of Salvation
+s[25895]  = {handler = ATM:BuffThreatMod({[127] = 0.7})} --Blessing of Salvation
+s[1038]   = {handler = ATM:BuffThreatMod({[127] = 0.7})} --Greater Blessing of Salvation
 
 
 --[[ Season of Discovery ]]--
 
 --Void Madness (Void-Touched leather gloves)
-s[429868] = {handler = ATM.BuffThreatMod({[127] = 1.21})}
-s[429867] = {handler = ATM.BuffThreatMod({[127] = 1.21})}
+s[429868] = {handler = ATM:BuffThreatMod({[127] = 1.21})}
+s[429867] = {handler = ATM:BuffThreatMod({[127] = 1.21})}
 
 --Planar Shift (Void-Touched cloth boots)
 s[428489] = {
     threat = -1000,
-    handler = ATM.TemporaryThreat
+    handler = ATM:TemporaryThreat
 }
 
 --Curse of Vulnerability (Void-Touched mail chest)
 s[427143] = {onDebuff=true, threat=5}
 
 -- Corrupted Salv
--- s[444444] = {handler = ATM.BuffThreatMod({[127] = 1.425})}
+-- s[444444] = {handler = ATM:BuffThreatMod({[127] = 1.425})}
 
 
 --Target Dummy

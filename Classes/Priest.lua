@@ -119,12 +119,12 @@ s[10909] = {ignored=true}
 s[2096]  = {ignored=true}
 
 --Fade
-s[10942] = {threat=ATM.Player.levelBasedThreat(-820, -3, 60, 70),handler=ATM.TemporaryThreat}
-s[10941] = {threat=ATM.Player.levelBasedThreat(-620, -3, 50, 60),handler=ATM.TemporaryThreat}
-s[9592]  = {threat=ATM.Player.levelBasedThreat(-440, -3, 40, 50),handler=ATM.TemporaryThreat}
-s[9579]  = {threat=ATM.Player.levelBasedThreat(-285, -3, 30, 40),handler=ATM.TemporaryThreat}
-s[9578]  = {threat=ATM.Player.levelBasedThreat(-155, -3, 20, 30),handler=ATM.TemporaryThreat}
-s[586]   = {threat=ATM.Player.levelBasedThreat( -55, -3,  8, 18),handler=ATM.TemporaryThreat}
+s[10942] = {threat=ATM.Player.levelBasedThreat(-820, -3, 60, 70),handler=ATM:TemporaryThreat}
+s[10941] = {threat=ATM.Player.levelBasedThreat(-620, -3, 50, 60),handler=ATM:TemporaryThreat}
+s[9592]  = {threat=ATM.Player.levelBasedThreat(-440, -3, 40, 50),handler=ATM:TemporaryThreat}
+s[9579]  = {threat=ATM.Player.levelBasedThreat(-285, -3, 30, 40),handler=ATM:TemporaryThreat}
+s[9578]  = {threat=ATM.Player.levelBasedThreat(-155, -3, 20, 30),handler=ATM:TemporaryThreat}
+s[586]   = {threat=ATM.Player.levelBasedThreat( -55, -3,  8, 18),handler=ATM:TemporaryThreat}
 
 --Mind Blast
 s[10947] = {onDamage=true,threat=540,threatMod=prototype.shadowAffinity}

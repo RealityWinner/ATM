@@ -11,7 +11,6 @@ local NPC = CreateFromMixins(ATM.Unit, {
     isCombat = false,
     isCC = false,
     seenAPI = false,
-    ccDebuffs = {},
     unit = nil,
     name = nil,
 })
@@ -67,56 +66,6 @@ function NPC:setCombat(isCombat, skipUpdate)
         end
     end
     self.isCombat = isCombat
-end
-
-function NPC:getCC()
-    return self.isCC
-end
-function NPC:setCC(spellName, isCC)
-    self.ccDebuffs[spellName] = isCC
-
-    local len = 0
-    for name,active in pairs(self.ccDebuffs) do
-        len = len + (active and 1 or 0)
-    end
-
-    ATM:print("NPC:setCC", spellName, isCC, len)
-
-    if C.debug then
-        if isCC and not self.isCC then
-            ATM:print("+cc", self.guid)
-        end
-        if not isCC and self.isCC and len == 0 then
-            ATM:print("-cc", self.guid)
-        end
-    end
-
-    self.isCC = len > 0
-end
-
-function NPC:GlobalThreatWipe()
-    ATM:print("ATM:NPC:GlobalThreatWipe", self.name or "", self.guid)
-    ATM:wipeThreat(self.guid)
-end
-function NPC:FullThreatDrop(...)
-    local destGUID = select(8, ...)
-    self:ReduceThreat(destGUID, 1.00)
-end
-function NPC:HalfThreatDrop(...)
-    local destGUID = select(8, ...)
-    self:ReduceThreat(destGUID, 0.50)
-end
-function NPC:QuarterThreatDrop(...)
-    local destGUID = select(8, ...)
-    self:ReduceThreat(destGUID, 0.25)
-end
-function NPC:ZeroThreatDrop(...)
-end
-function NPC:ReduceThreat(destGUID, amountPct)
-    local player = ATM:GetPlayer(destGUID)
-    if not player then return end
-
-    player:_addThreat(player:getThreat(self.guid) * -amountPct, self.guid)
 end
 
 NPC.spells = {

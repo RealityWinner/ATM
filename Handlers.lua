@@ -87,7 +87,7 @@ function ATM:Dispel(...)
     end
 end
 
-ATM.TemporaryThreat = function(self, ...)
+function ATM:TemporaryThreat(...)
     local subevent = select(2, ...)
     local spellID = select(12, ...)
     
@@ -105,7 +105,7 @@ ATM.TemporaryThreat = function(self, ...)
     end
 end
 
-ATM.BuffThreatMod = function(threatMod)
+function ATM:BuffThreatMod(threatMod)
     return function(self, ...)
         local subevent = select(2, ...)
         local spellID, spellName = select(12, ...)
@@ -115,5 +115,28 @@ ATM.BuffThreatMod = function(threatMod)
         if subevent == "SPELL_AURA_REMOVED" then
             self.threatBuffs[spellName] = nil
         end
+    end
+end
+
+function ATM:GlobalThreatWipe()
+    ATM:wipeThreat(self.guid)
+end
+function ATM:FullThreatDrop(...)
+    return ATM:ReduceThreat(1.00)(self, ...)
+end
+function NPC:HalfThreatDrop(...)
+    return ATM:ReduceThreat(0.50)(self, ...)
+end
+function NPC:QuarterThreatDrop(...)
+    return ATM:ReduceThreat(0.25)(self, ...)
+end
+function NPC:ZeroThreatDrop(...) end
+function ATM:ReduceThreat(amountPct)
+    return function(self, ...)
+        local destGUID = select(8, ...)
+        local threat = self:getThreat(destGUID) * amountPct
+
+        local _, subevent = ...
+        return subevent == "SPELL_MISSED" and -threat or threat
     end
 end

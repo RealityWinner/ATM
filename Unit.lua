@@ -67,6 +67,8 @@ local Unit = {
 
     inCombat = false,
     dead = false,
+    
+    ccEffects = {},
 }
 ATM.Unit = Unit
 
@@ -97,26 +99,54 @@ function Unit:MarkDead()
 end
 
 
+--CC'd Hostiles do not get global threat
+--CC'd Friendlies are low priority threat targets
+function Unit:getCC()
+    return self.isCC
+end
+function Unit:setCC(spellName, isCC)
+    self.ccEffects[spellName] = isCC
+
+    local len = 0
+    for name,active in pairs(self.ccEffects) do
+        len = len + (active and 1 or 0)
+    end
+
+    ATM:print("Unit:setCC", spellName, isCC, len)
+
+    if C.debug then
+        if isCC and not self.isCC then
+            ATM:print("+cc", self.guid)
+        end
+        if not isCC and self.isCC and len == 0 then
+            ATM:print("-cc", self.guid)
+        end
+    end
+
+    self.isCC = len > 0
+end
+
+
 function Unit:SPELL_CAST_SUCCESS(...)
     local spellID, spellName = select(12, ...)
     local spellData = ATM.spells[spellID]
-	if spellData and spellData.onCast then
-        local threat = spellData.threat
-        if type(threat) == "function" then
-            threat = threat(self)
-        end
-        if not threat then return end
+	if not spellData or not spellData.onCast then return end
 
-        local _, _, spellSchool, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _ = ...
-        threat = threat * self.threatBuffs[spellSchool]
-        if bit.band(destFlags, COMBATLOG_OBJECT_CONTROL_PLAYER) > 0 then
-            self:addThreat(-threat)
-        else
-            local enemy = ATM:GetUnit(destGUID)
-            if enemy then
-                enemy:setCombat(true)
-                self:addThreat(-threat, destGUID)
-            end
+    local threat = spellData.threat
+    if type(threat) == "function" then
+        threat = threat(self, ...)
+    end
+    if not threat then return end
+
+    local _, _, spellSchool, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _ = ...
+    threat = threat * self.threatBuffs[spellSchool]
+    if bit.band(destFlags, COMBATLOG_OBJECT_CONTROL_PLAYER) > 0 then
+        self:addThreat(-threat)
+    else
+        local enemy = ATM:GetUnit(destGUID)
+        if enemy then
+            enemy:setCombat(true)
+            self:addThreat(-threat, destGUID)
         end
     end
 end
@@ -124,13 +154,19 @@ end
 function Unit:SPELL_MISSED(...)
     local spellID, spellName = select(12, ...)
     local spellData = ATM.spells[spellID]
-	if spellData and spellData.onCast then
+	if not spellData then return end
+
+    local missType = select(15, ...)
+    if missType == "ABSORB" then return end --ABSORB is fine
+
+    --Player onCast, remove threat
+    if spellData.onCast and self.tag == "Player" then
         local threat = spellData.threat
         if type(threat) == "function" then
-            threat = threat(self)
+            threat = threat(self, ...)
         end
         if not threat then return end
-
+    
         local _, _, spellSchool, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _ = ...
         threat = threat * self.threatBuffs[spellSchool]
         if bit.band(destFlags, COMBATLOG_OBJECT_CONTROL_PLAYER) > 0 then
@@ -143,4 +179,12 @@ function Unit:SPELL_MISSED(...)
             end
         end
     end
+
+    if self.tag ~= "Creature" then return end
+    -- DEBUFF types can resist yet still cause threat drops. DAMAGE types can be absorbed yet still drop but not miss/dodge/parry.
+
+    --NPC onCast, under % threat
+    if spellData.onCast and self.tag == "Creature" then
+    end
+
 end
