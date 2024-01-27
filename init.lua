@@ -9,13 +9,11 @@ ns[3] = {} -- L, Localization
 -----------------------------
 -- AddOn Info
 -----------------------------
-ns[1].addonName	= parent
-ns[1].version	= C_AddOns.GetAddOnMetadata(parent, "Version")
-ns[1].locale	= GetLocale()
-
-
--- Add to Global namespace
 ATM = ns[1]
+ATM.addonName	= parent
+ATM.version	= C_AddOns.GetAddOnMetadata(parent, "Version")
+ATM.locale	= GetLocale()
+
 
 
 -- Helpers

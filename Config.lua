@@ -1,7 +1,7 @@
 local ATM, C, L, _ = unpack(select(2, ...))
 
 C.PREFIX = "ATM"
-C.DISPLAY = "0.1"
+C.DISPLAY = ATM.version
 
 -- Version used for sync
 C.VERSION = 1

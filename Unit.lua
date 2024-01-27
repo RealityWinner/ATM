@@ -98,6 +98,8 @@ function Unit:MarkDead()
     self:setCombat(false)
 end
 
+function Unit:GlobalThreatWipe()
+end
 
 --CC'd Hostiles do not get global threat
 --CC'd Friendlies are low priority threat targets

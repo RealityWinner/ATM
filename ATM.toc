@@ -2,11 +2,11 @@
 ## Title: AccurateThreatMeter
 ## Notes: A locally calculated threat meter (RealityWinner)
 ## Author: RealityWinner
-## Version: 0.01
+## Version: 0.1
 ## SavedVariables: ATM_Options
 
-## OptionalDeps: LibStub, AceGUI-3.0, AceConfig-3.0, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibThreatClassic2
-## X-Embeds: LibStub, Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets, LibThreatClassic2
+## OptionalDeps: LibStub, AceGUI-3.0, AceConfig-3.0, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets
+## X-Embeds: LibStub, Ace3, LibSharedMedia-3.0, AceGUI-3.0-SharedMediaWidgets
 
 ## X-Category: Combat
 
