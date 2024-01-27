@@ -123,7 +123,7 @@ player:wipeThreat()
     - update combat scanning code and events that set +combat for enemies
     - set threat to 0 when entering combat with an enemy
 * rewrite talent code to be more dynamic
-    - transmit threatBuffs table
+    - transmit threatMods table
 * track global threat added between api updates
     - store global threat split mod per player/enemy
     - you can have multiple different values per enemy

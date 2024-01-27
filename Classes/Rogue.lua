@@ -11,7 +11,7 @@ ATM.playerMixins[prototype.class] = prototype
 function prototype:scanTalents()
     -- ATM:print("ROGUE:scanTalents")
     
-    self.threatBuffs["Rogue"] = {[127] = 0.71}
+    self.threatMods["Rogue"] = {[127] = 0.71}
 end
 
 

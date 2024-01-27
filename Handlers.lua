@@ -70,7 +70,7 @@ function ATM:Dispel(...)
     local spellID, spellName = select(12, ...)
     if subevent == "SPELL_CAST_SUCCESS" then
         local spellData = ATM.spells[spellID]
-        local threat = spellData.threat * self.threatBuffs[spellSchool]
+        local threat = spellData.threat * self.threatMods[spellSchool]
         if spellData.threatMod then
             if type(spellData.threatMod) == "function" then
                 threat = threat * spellData.threatMod(self)
@@ -110,10 +110,10 @@ function ATM:BuffThreatMod(threatMod)
         local subevent = select(2, ...)
         local spellID, spellName = select(12, ...)
         if subevent == "SPELL_AURA_APPLIED" then
-            self.threatBuffs[spellName] = threatMod
+            self.threatMods[spellName] = threatMod
         end
         if subevent == "SPELL_AURA_REMOVED" then
-            self.threatBuffs[spellName] = nil
+            self.threatMods[spellName] = nil
         end
     end
 end

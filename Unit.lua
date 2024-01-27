@@ -139,7 +139,7 @@ function Unit:SPELL_CAST_SUCCESS(...)
     if not threat then return end
 
     local _, _, spellSchool, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _ = ...
-    threat = threat * self.threatBuffs[spellSchool]
+    threat = threat * self.threatMods[spellSchool]
     if bit.band(destFlags, COMBATLOG_OBJECT_CONTROL_PLAYER) > 0 then
         self:addThreat(-threat)
     else
@@ -168,7 +168,7 @@ function Unit:SPELL_MISSED(...)
         if not threat then return end
     
         local _, _, spellSchool, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _ = ...
-        threat = threat * self.threatBuffs[spellSchool]
+        threat = threat * self.threatMods[spellSchool]
         if bit.band(destFlags, COMBATLOG_OBJECT_CONTROL_PLAYER) > 0 then
             self:addThreat(-threat)
         else

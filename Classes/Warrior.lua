@@ -17,8 +17,8 @@ function prototype:scanTalents()
     if newDefiance ~= self.defianceMod then self.talentsTime = GetServerTime(); ATM:TransmitSelf() end
     self.defianceMod = newDefiance
 
-    if not rawget(self.threatBuffs, "Stance") then
-        self.threatBuffs["Stance"] = {[127] = 0.8}
+    if not rawget(self.threatMods, "Stance") then
+        self.threatMods["Stance"] = {[127] = 0.8}
     end
 end
 
@@ -36,13 +36,13 @@ function prototype:SPELL_AURA_APPLIED(...)
     local spellID, spellName = select(12, ...)
     if 2457 == spellID or 2458 == spellID or 23397 == spellID then --Battle/Berserker Stance
         ATM:print("[+]", self.name, "STANCE Battle/Berserk")
-        self.threatBuffs["Stance"] = nil
-        self.threatBuffs["Stance"] = {[127] = 0.8}
+        self.threatMods["Stance"] = nil
+        self.threatMods["Stance"] = {[127] = 0.8}
         return
     elseif 71 == spellID then --Defensive Stance
         ATM:print("[+]", self.name, "STANCE Defensive")
-        self.threatBuffs["Stance"] = nil
-        self.threatBuffs["Stance"] = {[127] = 1.3 * self.defianceMod}
+        self.threatMods["Stance"] = nil
+        self.threatMods["Stance"] = {[127] = 1.3 * self.defianceMod}
         return
     end
     

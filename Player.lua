@@ -77,15 +77,15 @@ function Player:init()
     self.globalThreat = {}
     self.globalThreatMod = {}
 
-    self.threatBuffs = {}
-    local function ThreatBuffsNewIndex(table, key, value)
+    self.threatMods = {}
+    local function ThreatModsNewIndex(table, key, value)
         --Assign the key
         rawset(table, key, value)
 
         --Nil out our cached modifier so it's recalculated next call
         rawset(table, '__value', nil)
     end
-    local function ThreatBuffsIndex(table, key)
+    local function ThreatModsIndex(table, key)
         --Check for the cached value
         local mul = rawget(table, '__value')
 
@@ -108,9 +108,9 @@ function Player:init()
 
         return mul[key] or 1.0
     end
-    setmetatable(self.threatBuffs, {
-        __newindex = ThreatBuffsNewIndex,
-        __index = ThreatBuffsIndex,
+    setmetatable(self.threatMods, {
+        __newindex = ThreatModsNewIndex,
+        __index = ThreatModsIndex,
         __mode = "k", --weak
     });
 end
@@ -182,15 +182,15 @@ function Player:scanEquipment()
     end
 
     if self._equipment[15] and self._equipment[15][2] == 2621 then
-        self.threatBuffs["Cloak - Subtlety"] = {[127] = 0.98}
+        self.threatMods["Cloak - Subtlety"] = {[127] = 0.98}
     else
-        self.threatBuffs["Cloak - Subtlety"] = nil
+        self.threatMods["Cloak - Subtlety"] = nil
     end
 
     if self._equipment[10] and self._equipment[10][2] == 2613 then
-        self.threatBuffs["Gloves - Threat"] = {[127] = 1.02}
+        self.threatMods["Gloves - Threat"] = {[127] = 1.02}
     else
-        self.threatBuffs["Gloves - Threat"] = nil
+        self.threatMods["Gloves - Threat"] = nil
     end
 end
 
@@ -440,9 +440,9 @@ function Player:SWING_DAMAGE(...)
 	local amount = select(12, ...)
 
     if C.debug then
-        ATM.insert(self.currentEvent, " R:", tostring(amount), " M:", tostring(self.threatBuffs[1]))
+        ATM.insert(self.currentEvent, " R:", tostring(amount), " M:", tostring(self.threatMods[1]))
     end
-    amount = amount * self.threatBuffs[1]
+    amount = amount * self.threatMods[1]
 
     self:setCombat(true)
     local enemy = ATM:GetEnemy(destGUID)
@@ -457,9 +457,9 @@ function Player:RANGE_DAMAGE(...)
 	local amount = select(15, ...)
     
     if C.debug then
-        ATM.insert(self.currentEvent, " R:", tostring(amount), " M:", tostring(self.threatBuffs[1]))
+        ATM.insert(self.currentEvent, " R:", tostring(amount), " M:", tostring(self.threatMods[1]))
     end
-    amount = amount * self.threatBuffs[1]
+    amount = amount * self.threatMods[1]
     
     self:setCombat(true)
     local enemy = ATM:GetEnemy(destGUID)
@@ -498,7 +498,7 @@ function Player:SPELL_DAMAGE(...)
         end
     end
     
-    local schoolThreatMod = self.threatBuffs[spellSchool]
+    local schoolThreatMod = self.threatMods[spellSchool]
     threat = threat * schoolThreatMod
     if C.debug and schoolThreatMod ~= 1.0 then
         ATM.insert(self.currentEvent, " M:", tostring(schoolThreatMod))
@@ -550,7 +550,7 @@ function Player:SPELL_HEAL(...)
         end
     end
 
-    local schoolThreatMod = self.threatBuffs[spellSchool]
+    local schoolThreatMod = self.threatMods[spellSchool]
     threat = threat * schoolThreatMod
     if C.debug and schoolThreatMod ~= 1.0 then
         ATM.insert(self.currentEvent, " M:", tostring(schoolThreatMod))
@@ -577,7 +577,7 @@ function Player:SPELL_ENERGIZE(...)
         self:addThreat(amount * 0.5)
     elseif powerType == ATM.PowerType.Rage then
         if spellID == 29131 then --bloodrage ticks
-            self:addThreat(amount * 5.0 * self.threatBuffs[spellSchool])
+            self:addThreat(amount * 5.0 * self.threatMods[spellSchool])
         else
             self:addThreat(amount * 5.0)
         end
@@ -624,7 +624,7 @@ function Player:AURA_THREAT(...)
         end
     end
 
-    local schoolThreatMod = self.threatBuffs[spellSchool]
+    local schoolThreatMod = self.threatMods[spellSchool]
     threat = threat * schoolThreatMod
     if C.debug and schoolThreatMod ~= 1.0 then
         ATM.insert(self.currentEvent, " M:", tostring(schoolThreatMod))

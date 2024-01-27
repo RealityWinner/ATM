@@ -22,12 +22,12 @@ function prototype:SPELL_AURA_APPLIED(...)
 
     if 25780 == spellID then --Vanilla
         ATM:print("[+]", self.name, "++ Righteous Fury")
-        self.threatBuffs[spellName] = {[2] = 1.6 * self.impRighteousFury}
+        self.threatMods[spellName] = {[2] = 1.6 * self.impRighteousFury}
         return
     end
     if 407627 == spellID then --Season of Discovery
         ATM:print("[+]", self.name, "++ Righteous Fury")
-        self.threatBuffs[spellName] = {[2] = 2.23 * self.impRighteousFury, [125] = 1.50}
+        self.threatMods[spellName] = {[2] = 2.23 * self.impRighteousFury, [125] = 1.50}
         return
     end
     
@@ -39,7 +39,7 @@ function prototype:SPELL_AURA_REMOVED(...)
 
     if 25780 == spellID or 407627 == spellID then --Righteous Fury
         ATM:print("[+]", self.name, "-- Righteous Fury")
-        self.threatBuffs[spellName] = nil
+        self.threatMods[spellName] = nil
         return
     end
     

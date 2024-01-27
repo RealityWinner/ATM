@@ -103,7 +103,7 @@ function prototype:SWING_DAMAGE(...)
             self.currentEvent = {"[", self.color, self.name, "|r] ", "Rockbiter ", isOffHand and "OH" or "MH"}
         end
         local destGUID = select(8, ...)
-        self:addThreat(bonusThreat * self.threatBuffs[1], destGUID)
+        self:addThreat(bonusThreat * self.threatMods[1], destGUID)
     end
 end
 
@@ -112,11 +112,11 @@ function prototype:UNIT_AURA()
         local name, icon, count, debuffType, duration, expirationTime, source, isStealable, nameplateShowPersonal, spellID = UnitBuff("player", i)
         if not spellID then break end
         if spellID == 408680 then
-            self.threatBuffs["Way of Earth"] = {[127] = 1.5}
+            self.threatMods["Way of Earth"] = {[127] = 1.5}
             return
         end
     end
-    self.threatBuffs["Way of Earth"] = nil
+    self.threatMods["Way of Earth"] = nil
 end
 
 prototype.classFields = ATM.toTrue({

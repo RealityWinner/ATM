@@ -12,12 +12,12 @@ function prototype:scanTalents()
     -- ATM:print("MAGE:scanTalent")
 
     --Arcane Subtlety
-    self.threatBuffs["Arcane Subtlety"] = {[64] = 1 - 0.2 * self:GetTalent(1, 1)}
+    self.threatMods["Arcane Subtlety"] = {[64] = 1 - 0.2 * self:GetTalent(1, 1)}
     --Frost Channeling
-    self.threatBuffs["Frost Channeling"] = {[16] = 1 - 0.1 * self:GetTalent(3, 12)}
+    self.threatMods["Frost Channeling"] = {[16] = 1 - 0.1 * self:GetTalent(3, 12)}
     --Burning Soul
-    self.threatBuffs["Burning Soul"] = {[4]  = 1 - 0.15 * self:GetTalent(2, 9)}
-    rawset(self.threatBuffs, '__value', nil) --force update
+    self.threatMods["Burning Soul"] = {[4]  = 1 - 0.15 * self:GetTalent(2, 9)}
+    rawset(self.threatMods, '__value', nil) --force update
 end
 
 --Clearcasting

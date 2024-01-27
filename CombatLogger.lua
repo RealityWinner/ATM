@@ -148,13 +148,13 @@ function CombatLogger:UNIT_AURA(unit)
 	-- 		if not spellID then break end
 	-- 		if spellID == 25909 then
 	-- 			--TODO apply the shaman talented threat reduction (20% -> 21.5% -> 23%)
-	-- 			ATM:player().threatBuffs["Tranq Air"] = {[127] = 0.8}
+	-- 			ATM:player().threatMods["Tranq Air"] = {[127] = 0.8}
 	-- 			return
 	-- 		end
 	-- 	end
 
 	-- 	--Not found, nil out
-	--  ATM:player().threatBuffs["Tranq Air"] = nil
+	--  ATM:player().threatMods["Tranq Air"] = nil
 	-- end
 end
 
