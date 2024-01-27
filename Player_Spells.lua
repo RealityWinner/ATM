@@ -80,7 +80,7 @@ s[429867] = {handler = ATM:BuffThreatMod({[127] = 1.21})}
 --Planar Shift (Void-Touched cloth boots)
 s[428489] = {
     threat = -1000,
-    handler = ATM:TemporaryThreat
+    handler = ATM.TemporaryThreat,
 }
 
 --Curse of Vulnerability (Void-Touched mail chest)

@@ -124,13 +124,13 @@ end
 function ATM:FullThreatDrop(...)
     return ATM:ReduceThreat(1.00)(self, ...)
 end
-function NPC:HalfThreatDrop(...)
+function ATM:HalfThreatDrop(...)
     return ATM:ReduceThreat(0.50)(self, ...)
 end
-function NPC:QuarterThreatDrop(...)
+function ATM:QuarterThreatDrop(...)
     return ATM:ReduceThreat(0.25)(self, ...)
 end
-function NPC:ZeroThreatDrop(...) end
+function ATM:ZeroThreatDrop(...) end
 function ATM:ReduceThreat(amountPct)
     return function(self, ...)
         local destGUID = select(8, ...)
