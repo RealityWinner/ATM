@@ -304,172 +304,34 @@ end)
 -- GUID to Unit --
 ------------------
 
-function ATM:PlayerGUIDToUnit(playerGUID)
-	local player = self:GetPlayer(playerGUID)
-	if not player then return end
+function ATM:GUIDToUnit(unitGUID, backupUnit)
+	if backupUnit and UnitGUID(backupUnit) == unitGUID then return backupUnit end
 
-	if not player.unit or UnitGUID(player.unit) ~= player.guid then
-		player.unit = self:_PlayerGUIDToUnit(playerGUID)
+	local unit = ATM:GetUnit(unitGUID)
+	if not unit then return end
+
+	if not unit.unit or UnitGUID(unit.unit) ~= unit.guid then
+		unit.unit = self:_GUIDToUnit(unitGUID)
 	end
 
-	return player.unit
+	if not unit.name and unit.unit then
+		unit.name = UnitName(unit.unit)
+	end
+
+	return unit.unit
 end
 
-function ATM:_PlayerGUIDToUnit(playerGUID)
-	-- if true then return end
-	local function check(t)
-		return UnitGUID(t) == playerGUID
-	end
+function ATM:_GUIDToUnit(unitGUID)
+    local tooltip = ATM.tooltip
+    tooltip:ClearAllPoints();
+    tooltip:ClearLines();
+    tooltip:SetOwner(WorldFrame, "ANCHOR_NONE");
+    tooltip:SetHyperlink("unit:"..unitGUID);
+    tooltip:Show()
 
-	local t = "player"
-	if check(t) then return t end
-
-	if IsInRaid() then
-		for i=1, GetNumGroupMembers() do
-			local t = "raid"..i
-			if check(t) then return t end
-		end
-	elseif IsInGroup() then
-		for i=1, GetNumGroupMembers()-1 do
-			local t = "party"..i
-			if check(t) then return t end
-		end
-	end
-	for i=1,40 do
-		local t = "nameplate"..i
-		if check(t) then return t end
-	end
-
-
-	-- If we got this far hope someone or something nearby is targetting
-	if IsInRaid() then
-		for i=1, GetNumGroupMembers() do
-			local t = "raid"..i.."target"
-			if check(t) then return t end
-		end
-	elseif IsInGroup() then
-		for i=1, GetNumGroupMembers()-1 do
-			local t = "party"..i.."target"
-			if check(t) then return t end
-		end
-	end
-	for i=1,40 do
-		local t = "nameplate"..i.."target"
-		if check(t) then return t end
-	end
-
-	
-	-- One last hail mary
-	if IsInRaid() then
-		for i=1, GetNumGroupMembers() do
-			local t = "raid"..i.."targettarget"
-			if check(t) then return t end
-		end
-	elseif IsInGroup() then
-		for i=1, GetNumGroupMembers()-1 do
-			local t = "party"..i.."targettarget"
-			if check(t) then return t end
-		end
-	end
-	for i=1,40 do
-		local t = "nameplate"..i.."targettarget"
-		if check(t) then return t end
-	end
+    local name, unit = tooltip:GetUnit()
+	return unit
 end
-
-
-function ATM:EnemyGUIDToTarget(enemyGUID, checkPets)
-	local enemy = self:GetEnemy(enemyGUID)
-	if not enemy then return end
-
-	if not enemy.unit or UnitGUID(enemy.unit) ~= enemy.guid then
-		enemy.unit = self:_EnemyGUIDToTarget(enemyGUID, checkPets)
-	end
-
-	if enemy.unit and not enemy.name then
-		enemy.name = UnitName(enemy.unit)
-	end
-
-	return enemy.unit
-end
-
-function ATM:_EnemyGUIDToTarget(enemyGUID, checkPets)
-	-- if true then return end
-	local function check(t)
-		return UnitGUID(t) == enemyGUID
-	end
-
-	local t = "playertarget"
-	if check(t) then return t end
-			
-	if checkPets then
-		local t = "playerpet"
-		if check(t) then return t end
-		
-		local t = "playerpettarget"
-		if check(t) then return t end
-	end
-
-
-	for i=1,40 do
-		local t = "nameplate"..i
-		if check(t) then return t end
-	end
-
-
-	-- If we got this far hope someone or something nearby is targetting
-	if IsInRaid() then
-		for i=1, GetNumGroupMembers() do
-			local t = "raid"..i.."target"
-			if check(t) then return t end
-			
-			if checkPets then
-				local t = "raid"..i.."pet"
-				if check(t) then return t end
-				
-				local t = "raid"..i.."pettarget"
-				if check(t) then return t end
-			end
-		end
-	elseif IsInGroup() then
-		for i=1, GetNumGroupMembers()-1 do
-			local t = "party"..i.."target"
-			if check(t) then return t end
-			
-			if checkPets then
-				local t = "party"..i.."pet"
-				if check(t) then return t end
-				
-				local t = "party"..i.."pettarget"
-				if check(t) then return t end
-			end
-		end
-	end
-	for i=1,40 do
-		local t = "nameplate"..i.."target"
-		if check(t) then return t end
-	end
-
-	
-	-- One last hail mary
-	if IsInRaid() then
-		for i=1, GetNumGroupMembers() do
-			local t = "raid"..i.."targettarget"
-			if check(t) then return t end
-		end
-	elseif IsInGroup() then
-		for i=1, GetNumGroupMembers()-1 do
-			local t = "party"..i.."targettarget"
-			if check(t) then return t end
-		end
-	end
-	for i=1,40 do
-		local t = "nameplate"..i.."targettarget"
-		if check(t) then return t end
-	end
-end
-
-
 
 ------------------
 -- Helper Funcs --
@@ -679,20 +541,19 @@ function ATM:UNIT_THREAT_LIST_UPDATE(destUnit)
 
 	--scan for tank changes
 	if enemy.tankGUID then
-		local tankUnit = self:PlayerGUIDToUnit(enemy.tankGUID)
-		if not tankUnit then
-			tankUnit = destUnit.."target"
-		end
-		local isTanking, status, threatpct, rawthreatpct, threatvalue = UnitDetailedThreatSituation(tankUnit, destUnit)
-		if not isTanking then
-			enemy.tankGUID = nil
-			enemy.tankThreat = nil
-			--ignore threat updates triggered by isTanking change
-			findTank(destUnit)
-			return
-		end
-		if not ATM:GetPlayer(UnitGUID(destUnit)) then
-			enemy.tankThreat = threatvalue / 100 --use API for NPCs
+		local tankUnit = self:GUIDToUnit(enemy.tankGUID, destUnit.."target")
+		if tankUnit then
+			local isTanking, status, threatpct, rawthreatpct, threatvalue = UnitDetailedThreatSituation(tankUnit, destUnit)
+			if not isTanking then
+				enemy.tankGUID = nil
+				enemy.tankThreat = nil
+				--ignore threat updates triggered by isTanking change
+				findTank(destUnit)
+				return
+			end
+			if not ATM:GetPlayer(UnitGUID(destUnit)) then
+				enemy.tankThreat = threatvalue / 100 --use API for NPCs
+			end
 		end
 	else
 		findTank(destUnit)

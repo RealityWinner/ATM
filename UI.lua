@@ -235,7 +235,7 @@ frame:SetScript("OnUpdate", function(self, elapsed)
                 local bar = self.threatBars[idx]
                 if not bar then break end
 
-                local playerUnit = ATM:PlayerGUIDToUnit(player.guid)
+                local playerUnit = ATM:GUIDToUnit(player.guid)
                 if playerUnit then
                     local isTanking, status, threatpct, rawthreatpct, threatvalue = ATM:UnitDetailedThreatSituation(playerUnit, unit)
                     if not threatvalue then break end

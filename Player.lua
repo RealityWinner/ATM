@@ -366,7 +366,7 @@ function Player:UpdateThreat(destUnit)
     local destGUID = UnitGUID(destUnit)
     if not destGUID then return end
 
-    local selfUnit = ATM:PlayerGUIDToUnit(self.guid)
+    local selfUnit = ATM:GUIDToUnit(self.guid, destUnit.."target")
     if not selfUnit then return end
 
 	local isTanking, status, threatpct, rawthreatpct, threatvalue = UnitDetailedThreatSituation(selfUnit, destUnit)

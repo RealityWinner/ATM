@@ -46,7 +46,13 @@ function ATM:MindControl(...)
 	if not enemy then return end
 
 	if not enemy.maxHP then
-		local t = ATM:EnemyGUIDToTarget(destGUID, true)
+		local t = ATM:GUIDToUnit(destGUID)
+        if not t then
+            local u = sourceName.."-target"
+            if UnitGUID(u) == destGUID then
+                t = u
+            end
+        end
 		if not t then return ATM:print("[ATM] failed to identify target") end
 	
 		enemy.maxHP = UnitHealthMax(t)
