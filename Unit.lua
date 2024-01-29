@@ -28,7 +28,6 @@ function ATM:NewUnit(unitGUID)
 
         unit = CreateFromMixins(ATM.Unit, ATM.Player, ATM.playerMixins[playerClass] or {})
         unit:init()
-        unit:setGUID(unitGUID)
         unit:setName(playerName)
         unit:setRace(playerRace)
         unit:setGender(gender)
@@ -41,9 +40,13 @@ function ATM:NewUnit(unitGUID)
         unit = CreateFromMixins(ATM.Unit, ATM.NPC, ATM.NPCs[tonumber(npcID)] or {})
         unit:init()
         unit:setID(npcID)
-        unit:setGUID(enemyGUID)
         unit:setSubGUID(spawn_uid)
     end
+    if tag == "Pet" then
+        unit = CreateFromMixins(ATM.Unit, ATM.Pet or {})
+        unit:init()
+    end
+    unit:setGUID(unitGUID)
 
     return unit
 end

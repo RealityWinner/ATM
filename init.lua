@@ -18,8 +18,8 @@ ATM.locale	= GetLocale()
 
 -- Helpers
 local band = bit.band
-function ATM.band(number, match)
-	return band(number, match) == match
+function ATM.band(value, mask)
+	return band(value, mask) == mask
 end
 
 function ATM.starts_with(str, start)
@@ -30,7 +30,7 @@ function ATM.ends_with(str, ending)
 end
 
 function ATM.insert(list, ...)
-	for i, v in ipairs({...}) do
+	for _,v in ipairs({...}) do
 	  list[#list+1] = v
 	end
   end

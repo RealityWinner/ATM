@@ -132,12 +132,10 @@ end
 
 -- UNIT_AURA triggers for self, party/raid members, targets, nameplate targets
 function CombatLogger:UNIT_AURA(unit)
-	local player = ATM:GetPlayer(UnitGUID(unit))
-	if player and player.UNIT_AURA then
-		player:UNIT_AURA()
+	local unit = ATM:GetUnit(UnitGUID(unit))
+	if unit and unit.UNIT_AURA then
+		unit:UNIT_AURA()
 	end
-
-
 
 	--TODO rewrite this to be better and track all players
 
@@ -173,12 +171,13 @@ function CombatLogger:COMBAT_LOG_EVENT_UNFILTERED(...)
 	if subevent == "UNIT_DIED" then
 		local unit = ATM:GetUnit(destGUID, true)
 		if unit then
-			unit:MarkDead(timestamp, destGUID)
+			unit:MarkDead()
 		end
 		return
 	end
 
 	-- Ignore hostile player targets
+	-- This will miss global threat edge cases like Dispel/Purge MC'd friendlies but API will save us :)
 	if ATM.band(destFlags, COMBATLOG_OBJECT_REACTION_HOSTILE + COMBATLOG_OBJECT_CONTROL_PLAYER) then return end
 
 	
@@ -191,28 +190,25 @@ function CombatLogger:COMBAT_LOG_EVENT_UNFILTERED(...)
 			if spellData.ignored then return end
 		end
 
-		local source = ATM:GetUnit(sourceGUID)
-		if not source then return end --Should never happen...
+		local unit = ATM:GetUnit(sourceGUID)
+		if not unit then return end --Should never happen...
 
 		if C.debug then
-			source.currentEvent = {"[", source.color, source.name, "|r] ", tostring(spellName)}
+			unit.currentEvent = {"[", unit.color, unit.name, "|r] ", tostring(spellName)}
 		end
 
-		local f = source[subevent]
+		local f = unit[subevent]
 		if f then
-			return f(source, ...)
+			return f(unit, ...)
 		end
 	end
 
 
-	if bit.band(destFlags, COMBATLOG_OBJECT_TYPE_PLAYER) > 0 and (false
-	or subevent == "SPELL_ENERGIZE"
-	or subevent == "SPELL_PERIODIC_ENERGIZE"
-	) then
-		local player = ATM:GetPlayer(destGUID)
-		if not player then return end
+	if (subevent == "SPELL_ENERGIZE" or subevent == "SPELL_PERIODIC_ENERGIZE") then
+		local unit = ATM:GetPlayer(destGUID)
+		if not unit then return end
 		if C.debug then
-			player.currentEvent = {"[", player.color, player.name, "|r] ", tostring(spellName)}
+			unit.currentEvent = {"[", unit.color, unit.name, "|r] ", tostring(spellName)}
 		end
 
 		local spellData = ATM.spells[spellID]
@@ -220,25 +216,25 @@ function CombatLogger:COMBAT_LOG_EVENT_UNFILTERED(...)
 			return
 		end
 
-		local p = player[subevent]
-		if p then
-			return p(player, ...)
+		local f = unit[subevent]
+		if f then
+			return f(unit, ...)
 		end
 	end
 
 
-	if bit.band(sourceFlags, COMBATLOG_OBJECT_TYPE_NPC) > 0 then
-		local enemy = ATM:GetEnemy(sourceGUID)
-		if not enemy then return end
+	if ATM.band(sourceFlags, COMBATLOG_OBJECT_REACTION_HOSTILE + COMBATLOG_OBJECT_CONTROL_NPC) then
+		local unit = ATM:GetUnit(sourceGUID)
+		if not unit then return end
 
 		-- Any actions towards a player will be considered hostile (AMERICCAAAAAAA)
-		if bit.band(sourceFlags, COMBATLOG_OBJECT_REACTION_HOSTILE) > 0 and bit.band(destFlags, COMBATLOG_OBJECT_CONTROL_PLAYER) > 0 then
-			enemy:setCombat(true)
+		if ATM.band(destFlags, COMBATLOG_OBJECT_CONTROL_PLAYER) then
+			unit:setCombat(true)
 		end
 		
-		local e = enemy[subevent]
-		if e then
-			return e(enemy, ...)
+		local f = unit[subevent]
+		if f then
+			return f(unit, ...)
 		end
 	end
 end
