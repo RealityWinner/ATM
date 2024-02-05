@@ -205,7 +205,7 @@ function CombatLogger:COMBAT_LOG_EVENT_UNFILTERED(...)
 
 
 	if (subevent == "SPELL_ENERGIZE" or subevent == "SPELL_PERIODIC_ENERGIZE") then
-		local unit = ATM:GetPlayer(destGUID)
+		local unit = ATM:GetUnit(destGUID)
 		if not unit then return end
 		if C.debug then
 			unit.currentEvent = {"[", unit.color, unit.name, "|r] ", tostring(spellName)}

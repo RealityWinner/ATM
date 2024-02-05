@@ -27,7 +27,7 @@ function prototype:scanEquipment()
 
     self.mightCount = 0
     for slotID,data in pairs(self._equipment) do
-        local setID = select(16, GetItemInfo(unpack(data)))
+        local setID = select(16, GetItemInfo(data[1] or ""))
         self.mightCount = self.mightCount + (setID and setID == 209 and 1 or 0)
     end
 end
@@ -36,12 +36,10 @@ function prototype:SPELL_AURA_APPLIED(...)
     local spellID, spellName = select(12, ...)
     if 2457 == spellID or 2458 == spellID or 23397 == spellID then --Battle/Berserker Stance
         ATM:print("[+]", self.name, "STANCE Battle/Berserk")
-        self.threatMods["Stance"] = nil
         self.threatMods["Stance"] = {[127] = 0.8}
         return
     elseif 71 == spellID then --Defensive Stance
         ATM:print("[+]", self.name, "STANCE Defensive")
-        self.threatMods["Stance"] = nil
         self.threatMods["Stance"] = {[127] = 1.3 * self.defianceMod}
         return
     end
