@@ -46,6 +46,9 @@ function ATM:NewUnit(unitGUID)
         unit = CreateFromMixins(ATM.Unit, ATM.Pet or {})
         unit:init()
     end
+    if not unit then
+        return print("NO UNIT?!", unitGUID)
+    end
     unit:setGUID(unitGUID)
 
     return unit

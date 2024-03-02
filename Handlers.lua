@@ -15,9 +15,9 @@ function ATM:Taunt(...)
     end
 
 	if subevent == "SPELL_AURA_APPLIED" then
-		local enemy = ATM:GetEnemy(destGUID)
+		local enemy = ATM:GetUnit(destGUID)
 		if enemy and enemy.tankGUID and enemy.tankGUID ~= self.guid then
-			local tank = ATM:GetPlayer(enemy.tankGUID)
+			local tank = ATM:GetUnit(enemy.tankGUID)
 			if tank then
 				self:setThreat(tank:getThreat(destGUID), destGUID)
 			end
@@ -42,7 +42,7 @@ function ATM:MindControl(...)
 	local _, subevent, _, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _ = ...
 	ATM:print("ATM:MindControl", subevent, sourceGUID, destGUID, destFlags, COMBATLOG_OBJECT_TYPE_NPC)
 
-	local enemy = ATM:GetEnemy(destGUID)
+	local enemy = ATM:GetUnit(destGUID)
 	if not enemy then return end
 
 	if not enemy.maxHP then
@@ -86,7 +86,7 @@ function ATM:Dispel(...)
         end
         self:addThreat(threat)
 
-        local enemy = ATM:GetEnemy(destGUID)
+        local enemy = ATM:GetUnit(destGUID)
         if enemy then
             self:addThreat(threat, destGUID)
         end

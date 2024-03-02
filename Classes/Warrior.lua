@@ -17,7 +17,16 @@ function prototype:scanTalents()
     if newDefiance ~= self.defianceMod then self.talentsTime = GetServerTime(); ATM:TransmitSelf() end
     self.defianceMod = newDefiance
 
-    if not rawget(self.threatMods, "Stance") then
+    if self._isLocal then
+        local newStance = 1.0
+        local _, _, _, spellID = GetShapeshiftFormInfo(GetShapeshiftForm())
+        if spellID == 2457 or spellID == 2458 then --Battle/Berserker Stance
+            newStance = 0.8
+        elseif spellID == 71 then --Defensive Stance
+            newStance = 1.3 * self.defianceMod
+        end
+        self.threatMods["Stance"] = {[127] = newStance}
+    elseif not self.threatMods.__mods["Stance"] then
         self.threatMods["Stance"] = {[127] = 0.8}
     end
 end
@@ -52,7 +61,7 @@ function prototype:eightSetMight()
 end
 
 function prototype:thunderClap()
-    return self._equipment[5] and self._equipment[5][3] == 6801 and 3.75 or 2.5
+    return self._equipment[7] and self._equipment[7][3] == 6801 and 3.75 or 2.5
 end
 
 

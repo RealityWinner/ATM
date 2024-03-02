@@ -7,30 +7,30 @@ local ATM, C, L, _ = unpack(select(2, ...))
 
 
 
-ATM._players = {}
-local function PlayersIndex(table, key)
-    local player = ATM:newPlayer(key);
-    if player then
-        table[key] = player
-    end
-    return player
-end
-setmetatable(ATM._players, {
-    __index = PlayersIndex,
-    __mode = "k", --weak
-});
+-- ATM._players = {}
+-- local function PlayersIndex(table, key)
+--     local player = ATM:newPlayer(key);
+--     if player then
+--         table[key] = player
+--     end
+--     return player
+-- end
+-- setmetatable(ATM._players, {
+--     __index = PlayersIndex,
+--     __mode = "k", --weak
+-- });
 
-function ATM:GetPlayer(playerGUID, skipCreate)
-    if not playerGUID then return end
-    -- self:print("ATM:GetPlayer", playerGUID)
+-- function ATM:GetPlayer(playerGUID, skipCreate)
+--     if not playerGUID then return end
+--     -- self:print("ATM:GetPlayer", playerGUID)
 
-    local player = rawget(self._players, playerGUID)
-    if player or skipCreate then return player end
+--     local player = rawget(self._players, playerGUID)
+--     if player or skipCreate then return player end
 
-    if ATM.starts_with(playerGUID, "Player-") then
-        return self._players[playerGUID]
-    end
-end
+--     if ATM.starts_with(playerGUID, "Player-") then
+--         return self._players[playerGUID]
+--     end
+-- end
 
 function ATM:newPlayer(playerGUID)
     local _, playerClass, _, playerRace, gender, playerName, server = GetPlayerInfoByGUID(playerGUID)
@@ -80,7 +80,19 @@ function Player:init()
     self.threatMods = {}
     local function ThreatModsNewIndex(table, key, value)
         --Assign the key
-        rawset(table, key, value)
+        rawset(table.__mods, key, value)
+
+        if C.debug then
+            local s = ""
+            if value then
+                for k,v in pairs(value) do
+                    s = s..string.format("[%s] = %s, ", k, v)
+                end
+            else
+                s = "nil"
+            end
+            ATM:print("Setting threat mods", key, s)
+        end
 
         --Nil out our cached modifier so it's recalculated next call
         rawset(table, '__value', nil)
@@ -91,7 +103,7 @@ function Player:init()
 
         if not mul then
             mul = {}
-            for name,threat in pairs(table) do
+            for name,threat in pairs(table.__mods) do
                 for school,value in pairs(threat) do
                     local mask = 1
                     while mask <= school do
@@ -108,6 +120,7 @@ function Player:init()
 
         return mul[key] or 1.0
     end
+    self.threatMods.__mods = {}
     setmetatable(self.threatMods, {
         __newindex = ThreatModsNewIndex,
         __index = ThreatModsIndex,
@@ -297,7 +310,7 @@ function Player:_addThreat(amount, enemyGUID)
         ATM._threat[self.guid][enemyGUID] = newThreat
         ATM._threat[enemyGUID][self.guid] = newThreat
 
-        local enemy = ATM:GetEnemy(enemyGUID)
+        local enemy = ATM:GetUnit(enemyGUID)
         if enemy and enemy.tankGUID == self.guid then
             enemy.tankThreat = newThreat
         end
@@ -323,7 +336,7 @@ function Player:_addThreat(amount, enemyGUID)
                 ATM._threat[self.guid][enemyGUID] = newThreat
                 ATM._threat[enemyGUID][self.guid] = newThreat
 
-                local enemy = ATM:GetEnemy(enemyGUID)
+                local enemy = ATM:GetUnit(enemyGUID)
                 if enemy and enemy.tankGUID == self.guid then
                     enemy.tankThreat = newThreat
                 end
@@ -344,7 +357,7 @@ function Player:setThreat(amount, enemyGUID)
         self.globalThreat[enemyGUID] = nil
     end
 
-    local enemy = ATM:GetEnemy(enemyGUID)
+    local enemy = ATM:GetUnit(enemyGUID)
     if enemy and enemy.tankGUID == self.guid then
         enemy.tankThreat = amount
     end
@@ -371,7 +384,7 @@ function Player:UpdateThreat(destUnit)
 
 	local isTanking, status, threatpct, rawthreatpct, threatvalue = UnitDetailedThreatSituation(selfUnit, destUnit)
 	if threatvalue then
-        local enemy = ATM:GetEnemy(destGUID)
+        local enemy = ATM:GetUnit(destGUID)
         if enemy and not enemy.seenAPI and threatvalue > 0 then
             enemy.seenAPI = true
         end
@@ -445,7 +458,7 @@ function Player:SWING_DAMAGE(...)
     amount = amount * self.threatMods[1]
 
     self:setCombat(true)
-    local enemy = ATM:GetEnemy(destGUID)
+    local enemy = ATM:GetUnit(destGUID)
     if enemy then
         enemy:setCombat(true)
     end
@@ -462,7 +475,7 @@ function Player:RANGE_DAMAGE(...)
     amount = amount * self.threatMods[1]
     
     self:setCombat(true)
-    local enemy = ATM:GetEnemy(destGUID)
+    local enemy = ATM:GetUnit(destGUID)
     if enemy then
         enemy:setCombat(true)
     end
@@ -506,7 +519,7 @@ function Player:SPELL_DAMAGE(...)
     
 
     self:setCombat(true)
-    local player = ATM:GetEnemy(destGUID)
+    local player = ATM:GetUnit(destGUID)
     if player then
         player:setCombat(true)
     end
@@ -557,7 +570,7 @@ function Player:SPELL_HEAL(...)
     end
 
 
-    local player = ATM:GetPlayer(destGUID)
+    local player = ATM:GetUnit(destGUID)
     if player and player:getCombat() then
         self:setCombat(true)
     end
@@ -592,7 +605,7 @@ function Player:AURA_THREAT(...)
 	local timestamp, subevent, _, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags = ...
     local spellID, spellName, spellSchool, auraType, amount = select(12, ...)
     local spellData = ATM.spells[spellID]
-    local enemy = ATM:GetEnemy(destGUID)
+    local enemy = ATM:GetUnit(destGUID)
 
     --Set CC; CC'd enemies ignore global threat
     if enemy and spellData and spellData.isCC then
@@ -633,7 +646,7 @@ function Player:AURA_THREAT(...)
 
     if auraType == "BUFF" then
         if bit.band(destFlags, COMBATLOG_OBJECT_TYPE_PLAYER) > 0 then
-            if not self:getCombat() and ATM:GetPlayer(destGUID):getCombat() then
+            if not self:getCombat() and ATM:GetUnit(destGUID):getCombat() then
                 self:setCombat(true)
             end
         end
@@ -654,7 +667,7 @@ function Player:SPELL_AURA_REMOVED(...)
     local spellData = ATM.spells[spellID]
     if not spellData or not spellData.isCC then return end
     
-    local enemy = ATM:GetEnemy(destGUID, true)
+    local enemy = ATM:GetUnit(destGUID, true)
     if enemy then
         enemy:setCC(spellName, false)
         enemy.lastThreatUpdate = ATM:GetTime() --ignore threat updates while still CC'd

@@ -158,7 +158,7 @@ end
 
 
 function CombatLogger:COMBAT_LOG_EVENT_UNFILTERED(...)
-	local timestamp, subevent, _, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _, _, spellName, spellID = ...
+	local timestamp, subevent, _, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _, spellID, spellName = ...
 	if C.debug and type(spellName) ~= 'string' then
 		spellName = "Melee"
 	end
@@ -176,22 +176,23 @@ function CombatLogger:COMBAT_LOG_EVENT_UNFILTERED(...)
 		return
 	end
 
+	
+	local spellData = ATM.spells[spellID]
+	if spellData and spellData.ignored then return end
+
 	-- Ignore hostile player targets
 	-- This will miss global threat edge cases like Dispel/Purge MC'd friendlies but API will save us :)
 	if ATM.band(destFlags, COMBATLOG_OBJECT_REACTION_HOSTILE + COMBATLOG_OBJECT_CONTROL_PLAYER) then return end
 
 	
 	if ATM.band(sourceFlags, COMBATLOG_OBJECT_REACTION_FRIENDLY + COMBATLOG_OBJECT_CONTROL_PLAYER) then
-		local spellData = ATM.spells[spellID]
-		if spellData then
-			if spellData.handler then
-				return spellData.handler(player, ...)
-			end
-			if spellData.ignored then return end
-		end
-
 		local unit = ATM:GetUnit(sourceGUID)
-		if not unit then return end --Should never happen...
+		if not unit then return end
+
+		local spellData = ATM.spells[spellID]
+		if spellData and spellData.handler then
+			return spellData.handler(unit, ...)
+		end
 
 		if C.debug then
 			unit.currentEvent = {"[", unit.color, unit.name, "|r] ", tostring(spellName)}
@@ -209,11 +210,6 @@ function CombatLogger:COMBAT_LOG_EVENT_UNFILTERED(...)
 		if not unit then return end
 		if C.debug then
 			unit.currentEvent = {"[", unit.color, unit.name, "|r] ", tostring(spellName)}
-		end
-
-		local spellData = ATM.spells[spellID]
-		if spellData and spellData.ignored then
-			return
 		end
 
 		local f = unit[subevent]

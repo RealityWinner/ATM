@@ -68,38 +68,6 @@ function NPC:setCombat(isCombat, skipUpdate)
     self.isCombat = isCombat
 end
 
-NPC.spells = {
-    --[[
-        The spell name is the key and gets replaced by a localized version of the spell name retrieved by GetSpellInfo(ranks[1])
-        ["Spell name"] = {
-            ids:
-                The spell IDs of the ability
-            type:
-                CAST: Call handler on initial cast event
-                DAMAGE: Call handler on damage events (including absorb)
-                DEBUFF: Call handler only on aura event (applied, refresh, +dose), this includes resists/immunes
-            handler:
-                The function used for handling the spell cast, built in handlers are:
-                    ATM.NPC.GlobalThreatWipe - wipes threat for the entire raid
-                    ATM.NPC.FullThreatDrop - reduces targets threat by 100%
-                    ATM.NPC.HalfThreatDrop - reduces targets threat by 50%
-                    ATM.NPC.QuarterThreatDrop - reduces targets threat by 25%
-                    ATM.NPC.ZeroThreatDrop - do nothing
-        }
-    ]]--
-
-    --Generic Knock Away
-    ["Knock Away"] = {
-        id = {10101},
-        type = "DAMAGE",
-        handler = NPC.HalfThreatDrop
-    },
-    ["Net"] = {
-        id = {6533},
-        type = "CAST", --CONFIRMED even w/ Net Guard
-        handler = NPC.HalfThreatDrop,
-    },
-}
 ATM.NPC = NPC
 
 
@@ -180,12 +148,12 @@ setmetatable(ATM._enemies, {
     __mode = "k", --weak
 });
 
-function ATM:GetEnemy(enemyGUID, skipCreate)
-    local enemy = rawget(self._enemies, enemyGUID)
-    if enemy then enemy.lastAccess = self:GetTime() end
-    if enemy or skipCreate then return enemy end
-    return self._enemies[enemyGUID]
-end
+-- function ATM:GetEnemy(enemyGUID, skipCreate)
+--     local enemy = rawget(self._enemies, enemyGUID)
+--     if enemy then enemy.lastAccess = self:GetTime() end
+--     if enemy or skipCreate then return enemy end
+--     return self._enemies[enemyGUID]
+-- end
 
 function ATM:newEnemy(enemyGUID)
     local tag, _, _, _, _, npcID, spawn_uid = strsplit('-', enemyGUID)

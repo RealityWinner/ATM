@@ -118,7 +118,7 @@ function ATM:player()
 	if self._player then
 		return self._player
 	else
-		self._player = self:GetPlayer(UnitGUID("player"))
+		self._player = self:GetUnit(UnitGUID("player"))
 		if not self._player then return end
 		self._player._isLocal = true
 		self._player.unit = "player"
@@ -134,7 +134,7 @@ function ATM:GROUP_ROSTER_UPDATE()
 	if IsInRaid() then
 		for i=1, GetNumGroupMembers() do
 			local n = "raid"..i
-			local p = self:GetPlayer(UnitGUID(n))
+			local p = self:GetUnit(UnitGUID(n))
 			if p then
 				p.unit = n
 				self.groupUnits[n] = p
@@ -143,7 +143,7 @@ function ATM:GROUP_ROSTER_UPDATE()
 	elseif IsInGroup() then
 		for i=1, GetNumGroupMembers()-1 do
 			local n = "party"..i
-			local p = self:GetPlayer(UnitGUID(n))
+			local p = self:GetUnit(UnitGUID(n))
 			if p then
 				p.unit = n
 				self.groupUnits[n] = p
@@ -157,7 +157,7 @@ end
 
 function ATM:UNIT_LEVEL(unit)
 	-- print("ATM:UNIT_LEVEL")
-	local player = self:GetPlayer(UnitGUID(unit))
+	local player = self:GetUnit(UnitGUID(unit))
 	if player then
 		player:setLevel(UnitLevel(unit))
 	end
@@ -236,7 +236,7 @@ function ATM:_TransmitSelf()
 	local now = GetServerTime()
 	if IsInRaid() then
 		for i=1, GetNumGroupMembers() do
-			local p = self:GetPlayer(UnitGUID("raid"..i))
+			local p = self:GetUnit(UnitGUID("raid"..i))
 			if p then
 				if p.lastTransmit and p.lastTransmit < oldestTransmit then
 					oldestTransmit = p.lastTransmit
@@ -246,7 +246,7 @@ function ATM:_TransmitSelf()
 		end
 	elseif IsInGroup() then
 		for i=1, GetNumGroupMembers()-1 do
-			local p = self:GetPlayer(UnitGUID("party"..i))
+			local p = self:GetUnit(UnitGUID("party"..i))
 			if p then
 				if p.lastTransmit and p.lastTransmit < oldestTransmit then
 					oldestTransmit = p.lastTransmit
@@ -271,10 +271,10 @@ Comm:RegisterComm(C.PREFIX, function(prefix, message, distribution, sender)
 	if not data then
 		return ATM:print("DESERIALIZE FAILED")
 	end
-	-- ATM:print(DevTools_Dump(data))
+	--DevTools_Dump(data)
 
 	
-	local player = ATM:GetPlayer(UnitGUID(sender))
+	local player = ATM:GetUnit(UnitGUID(sender))
 	if not player then return end --This should never happen but better safe than sorry
 
 	local version = data['VER']
@@ -376,8 +376,8 @@ end
 -- Called when an NPC fails UnitAffectingCombat or dies
 function ATM:wipeThreat(enemyGUID)
 	ATM:print("ATM:wipeThreat", enemyGUID)
-	for playerGUID, player in pairs(self._players) do
-		player:setThreat(nil, enemyGUID)
+	for unitGUID, unit in pairs(self._units) do
+		unit:setThreat(nil, enemyGUID)
 	end
 	self._threat[enemyGUID] = nil
 end
@@ -435,7 +435,7 @@ function ATM:checkTargetStatus(t)
 	-- UnitCanCooperate seems to returns true for all friendly NPCs
 
 	if UnitIsPlayer(t) then
-		local player = ATM:GetPlayer(t)
+		local player = ATM:GetUnit(UnitGUID(t))
 		if player then
 			player:setCombat(UnitAffectingCombat(t))
 		end
@@ -444,7 +444,7 @@ function ATM:checkTargetStatus(t)
 	end
 	
 	if UnitCanAttack("player", t) then
-		local enemy = self:GetEnemy(UnitGUID(t))
+		local enemy = self:GetUnit(UnitGUID(t))
 		if enemy then
 			enemy:setCombat(UnitAffectingCombat(t) or UnitCanCooperate("player", t.."target"))
 		end
@@ -477,18 +477,18 @@ function ATM:numEnemiesInCombat()
 end
 
 function ATM:playersInCombat(destUnit, destGUID)
-	local enemy = self:GetEnemy(destGUID or UnitGUID(destUnit), true)
+	local enemy = self:GetUnit(destGUID or UnitGUID(destUnit), true)
 	if not enemy then return end
 
 	local out = {}
 	for guid,threat in pairs(self._threat[enemy.guid]) do
-		out[self:GetPlayer(guid):getName()] = threat
+		out[self:GetUnit(guid):getName()] = threat
 	end
 	return out
 end
 
 function ATM:highestThreat(destUnit, destGUID)
-	local enemy = self:GetEnemy(destGUID or UnitGUID(destUnit), true)
+	local enemy = self:GetUnit(destGUID or UnitGUID(destUnit), true)
 	if not enemy then return end
 
 	local highestThreat,highestGUID = 0,""
@@ -504,14 +504,14 @@ end
 
 function ATM:getTank(enemyUnit)
 	local enemyGUID = UnitGUID(enemyUnit)
-	local enemy = ATM:GetEnemy(enemyGUID)
+	local enemy = ATM:GetUnit(enemyGUID)
 	if not enemy or not enemy.tankGUID then return end
-	return ATM:GetPlayer(enemy.tankGUID)
+	return ATM:GetUnit(enemy.tankGUID)
 end
 
 local function findTank(enemyUnit)
 	local enemyGUID = UnitGUID(enemyUnit)
-	local enemy = ATM:GetEnemy(enemyGUID)
+	local enemy = ATM:GetUnit(enemyGUID)
 	if not enemy.tankGUID then
 		local isTanking, status, threatpct, rawthreatpct, threatvalue = UnitDetailedThreatSituation(enemyUnit.."target", enemyUnit)
 		if isTanking then
@@ -524,7 +524,7 @@ local function findTank(enemyUnit)
 			isTanking = UnitDetailedThreatSituation(playerUnit, enemyUnit)
 			if isTanking then
 				enemy.tankGUID = UnitGUID(playerUnit)
-				enemy.tankThreat = ATM:GetPlayer(UnitGUID(playerUnit)):getThreat(enemyGUID)
+				enemy.tankThreat = ATM:GetUnit(UnitGUID(playerUnit)):getThreat(enemyGUID)
 				return
 			end
 		end
@@ -533,7 +533,7 @@ end
 
 function ATM:UNIT_THREAT_LIST_UPDATE(destUnit)
 	local destGUID = UnitGUID(destUnit)
-	local enemy = self:GetEnemy(destGUID)
+	local enemy = self:GetUnit(destGUID)
 	if not enemy then return end
 
 	if enemy.lastThreatUpdate == ATM:GetTime() then return end
@@ -551,7 +551,7 @@ function ATM:UNIT_THREAT_LIST_UPDATE(destUnit)
 				findTank(destUnit)
 				return
 			end
-			if not ATM:GetPlayer(UnitGUID(destUnit)) then
+			if not ATM:GetUnit(UnitGUID(destUnit)) then
 				enemy.tankThreat = threatvalue / 100 --use API for NPCs
 			end
 		end
@@ -559,8 +559,8 @@ function ATM:UNIT_THREAT_LIST_UPDATE(destUnit)
 		findTank(destUnit)
 	end
 
-	for guid,player in pairs(self._players) do
-		player:UpdateThreat(destUnit)
+	for guid,unit in pairs(self._units) do
+		if unit.UpdateThreat then unit:UpdateThreat(destUnit) end
 	end
 end
 
@@ -570,8 +570,8 @@ function ATM:UnitDetailedThreatSituation(sourceUnit, destUnit)
 	if threatpct == 100 then rawthreatpct = 100 end
 
 	local enemyGUID = UnitGUID(destUnit)
-	local enemy = self:GetEnemy(enemyGUID)
-	local player = self:GetPlayer(UnitGUID(sourceUnit))
+	local enemy = self:GetUnit(enemyGUID)
+	local player = self:GetUnit(UnitGUID(sourceUnit))
 	if enemy and player then
 		threatvalue = player:getThreat(enemyGUID, true)
 		if threatvalue > 0 then

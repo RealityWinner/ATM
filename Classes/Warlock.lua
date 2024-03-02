@@ -137,6 +137,15 @@ s[11739] = {onBuff=true,threat=42}
 s[11740] = {onBuff=true,threat=52}
 s[28610] = {onBuff=true,threat=60}
 
+--Life Tap
+s[31818]  = {ignored=true} --The actual energize
+s[1454]   = {ignored=true}
+s[1455]   = {ignored=true}
+s[1456]   = {ignored=true}
+s[11687]  = {ignored=true}
+s[11688]  = {ignored=true}
+s[11689]  = {ignored=true}
+
 
 
 
