@@ -49,8 +49,8 @@ function ATM:NewUnit(unitGUID)
     if not unit then
         return print("NO UNIT?!", unitGUID)
     end
-    unit.tag = tag
     unit:setGUID(unitGUID)
+    unit.tag = tag
 
     return unit
 end
@@ -68,7 +68,7 @@ setmetatable(ATM._units, {
 
 
 local Unit = {
-    type = "", --"Player" or "Creature"
+    tag = "", --"Player" or "Creature" etc
     guid = "",
     name = "",
 
@@ -125,10 +125,10 @@ function Unit:setCC(spellName, isCC)
 
     if C.debug then
         if isCC and not self.isCC then
-            ATM:print("+cc", self.guid)
+            ATM:print("+cc", self.guid, len)
         end
         if not isCC and self.isCC and len == 0 then
-            ATM:print("-cc", self.guid)
+            ATM:print("-cc", self.guid, len)
         end
     end
 
@@ -140,6 +140,8 @@ function Unit:SPELL_CAST_SUCCESS(...)
     local spellID, spellName = select(12, ...)
     local spellData = ATM.spells[spellID]
 	if not spellData or not spellData.onCast then return end
+    
+    if self.isNPC then return end --TODO
 
     local threat = spellData.threat
     if type(threat) == "function" then
@@ -165,35 +167,30 @@ function Unit:SPELL_MISSED(...)
     local spellData = ATM.spells[spellID]
 	if not spellData then return end
 
-    local missType = select(15, ...)
-    if missType == "ABSORB" then return end --ABSORB is fine
+    local missType = select(15, ...) --ABSORB is fine
+    if self.tag == "Player" and missType == "ABSORB" then return end
+    if self.isNPC and (missType == "MISS" or missType == "DODGE" or missType == "PARRY") then return end
 
     --Player onCast, remove threat
     if spellData.onCast and self.tag == "Player" then
         local threat = spellData.threat
-        if type(threat) == "function" then
+        if threat and type(threat) == "function" then
             threat = threat(self, ...)
         end
         if not threat then return end
     
         local _, _, spellSchool, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _ = ...
         threat = threat * self.threatMods[spellSchool]
-        if bit.band(destFlags, COMBATLOG_OBJECT_CONTROL_PLAYER) > 0 then
-            self:addThreat(-threat)
-        else
-            local enemy = ATM:GetUnit(destGUID)
-            if enemy then
-                enemy:setCombat(true)
-                self:addThreat(-threat, destGUID)
-            end
+
+        local unit = ATM:GetUnit(destGUID)
+        if unit and unit.isNPC then
+            unit:setCombat(true)
+            self:addThreat(-threat, destGUID)
         end
     end
 
-    if self.tag ~= "Creature" then return end
     -- DEBUFF types can resist yet still cause threat drops. DAMAGE types can be absorbed yet still drop but not miss/dodge/parry.
+    if spellData.onCast and self.isNPC then
 
-    --NPC onCast, under % threat
-    if spellData.onCast and self.tag == "Creature" then
     end
-
 end
