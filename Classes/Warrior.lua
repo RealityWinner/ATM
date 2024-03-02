@@ -112,7 +112,7 @@ s[6343]  = {onDamage=true,threatMod=prototype.thunderClap}
 
 --Hamstring
 s[7373] = {onDamage=true,threat=2.5*54,threatMod=1.25}
-s[7372] = {onDamage=true,threat=2.5*32,threatMod=1.25}
+s[7372] = {onDamage=true,threat=64,threatMod=1.25}
 s[1715] = {onDamage=true,threat=2.5*8,threatMod=1.25}
 
 --Shield Slam
@@ -152,7 +152,7 @@ s[78]    = {onDamage=true,threat=16}
 --Cleave
 s[20569] = {onDamage=true,threat=1.5*60}
 s[11609] = {onDamage=true,threat=1.5*50}
-s[11608] = {onDamage=true,threat=1.5*40}
+s[11608] = {onDamage=true,threat=62}
 s[7369]  = {onDamage=true,threat=1.5*30}
 s[845]   = {onDamage=true,threat=1.5*20}
 

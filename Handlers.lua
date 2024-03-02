@@ -127,22 +127,23 @@ end
 function ATM:GlobalThreatWipe()
     ATM:wipeThreat(self.guid)
 end
-function ATM:FullThreatDrop(...)
-    return ATM:ReduceThreat(1.00)(self, ...)
+function ATM:FullThreatDrop()
+    return ATM:ReduceThreat(1.00)
 end
-function ATM:HalfThreatDrop(...)
-    return ATM:ReduceThreat(0.50)(self, ...)
+function ATM:HalfThreatDrop()
+    return ATM:ReduceThreat(0.50)
 end
-function ATM:QuarterThreatDrop(...)
-    return ATM:ReduceThreat(0.25)(self, ...)
+function ATM:QuarterThreatDrop()
+    return ATM:ReduceThreat(0.25)
 end
-function ATM:ZeroThreatDrop(...) end
+function ATM:ZeroThreatDrop() end
 function ATM:ReduceThreat(amountPct)
     return function(self, ...)
         local destGUID = select(8, ...)
-        local threat = self:getThreat(destGUID) * amountPct
-
-        local _, subevent = ...
-        return subevent == "SPELL_MISSED" and -threat or threat
+        local target = ATM:GetUnit(destGUID)
+        if not target then return end
+        
+        local threat = target:getThreat(self.guid) * amountPct
+        target:addThreat(-threat, self.guid)
     end
 end

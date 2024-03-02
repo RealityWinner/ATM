@@ -74,29 +74,23 @@ ATM.NPC = NPC
 
 -- DEBUFF handlers, threat drops like Brood Power: Green where you can resist or get debuffed
 function NPC:SPELL_AURA(...)
+    local timestamp, subevent = ...
     local spellID, spellName = select(12, ...)
-    --Checking if we care about the spell
     local spellData = ATM.spells[spellID]
-	if not spellData or spellData.type ~= "DEBUFF" then
-		return
-    end
-    ATM:print("NPC SPELL_AURA", spellName)
+	if not spellData or not spellData.onDebuff then	return end
+    ATM:print("NPC", subevent, spellName)
 
     spellData.handler(self, ...)
 end
 NPC.SPELL_AURA_APPLIED = NPC.SPELL_AURA
 NPC.SPELL_AURA_REFRESH = NPC.SPELL_AURA
-NPC.SPELL_AURA_APPLIED_DOSE = NPC.SPELL_AURA
-
+-- NPC.SPELL_AURA_APPLIED_DOSE = NPC.SPELL_AURA --This also fires SPELL_AURA_REFRESH
 
 -- DAMAGE handlers, used for targetted damage threat drops like knock away
 function NPC:SPELL_DAMAGE(...)    
     local spellID, spellName = select(12, ...)
-    --Checking if we care about the spell
     local spellData = ATM.spells[spellID]
-	if not spellData or spellData.type ~= "DAMAGE" then
-		return
-    end
+	if not spellData or not spellData.onDamage then return end
     ATM:print("NPC SPELL_DAMAGE", spellName)
 
     spellData.handler(self, ...)
@@ -105,37 +99,30 @@ end
 -- CAST handlers, used for targetted casted threat drops like Onyxia's Fireballs or global wipes or Nets w/ Net Guard active
 function NPC:SPELL_CAST_SUCCESS(...)
     local spellID, spellName = select(12, ...)
-    --Checking if we care about the spell
     local spellData = ATM.spells[spellID]
-	if not spellData or spellData.type ~= "CAST" then
-		return
-    end
+	if not spellData or not spellData.onCast then return end
     ATM:print("NPC SPELL_CAST_SUCCESS", spellName)
 
     spellData.handler(self, ...)
 end
 
 -- DEBUFF types can resist yet still cause threat drops. DAMAGE types can be absorbed yet still drop but not miss/dodge/parry.
+-- In these cases SPELL_MISSED fires instead of SPELL_DAMAGE or SPELL_AURA
 function NPC:SPELL_MISSED(...)
     local spellID, spellName = select(12, ...)
-    --Checking if we care about the spell
     local spellData = ATM.spells[spellID]
-	if not spellData then
-		return
-    end
-    ATM:print("NPC SPELL_MISSED", spellName)
+	if not spellData then return end
 
-    if spellData.type == "DEBUFF" then
+    local missType = select(15, ...)
+    ATM:print("NPC SPELL_MISSED", spellName, missType, spellData.onDebuff or "false", spellData.onDamage or "false")
+    if missType == "RESIST" and spellData.onDebuff then
         return spellData.handler(self, ...)
     end
-    if spellData.type == "DAMAGE" then
-        local missType = select(15, ...)
-        if missType == "ABSORB" then
-            return spellData.handler(self, ...)
-        end
+    if missType == "ABSORB" and spellData.onDamage then
+        return spellData.handler(self, ...)
     end
 end
 
 --[[ TESTING ]]--
---Earthborer
--- s[18070] = {onCast=true,handler=ATM.NPC.QuarterThreatDrop}
+--Earthborer Acid
+ATM.spells[18070] = {onDebuff=true,handler=ATM.QuarterThreatDrop()}
