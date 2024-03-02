@@ -36,7 +36,7 @@ function ATM:NewUnit(unitGUID)
             unit:scanTalents()
         end
     end
-    if tag == "Creature" then
+    if tag == "Creature" or tag == "Vehicle" then
         unit = CreateFromMixins(ATM.Unit, ATM.NPC, ATM.NPCs[tonumber(npcID)] or {})
         unit:init()
         unit:setID(npcID)
@@ -49,6 +49,7 @@ function ATM:NewUnit(unitGUID)
     if not unit then
         return print("NO UNIT?!", unitGUID)
     end
+    unit.tag = tag
     unit:setGUID(unitGUID)
 
     return unit

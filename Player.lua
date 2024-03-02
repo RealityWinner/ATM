@@ -78,9 +78,9 @@ function Player:init()
     self.globalThreatMod = {}
 
     self.threatMods = {}
-    local function ThreatModsNewIndex(table, key, value)
+    local function ThreatModsNewIndex(tbl, key, value)
         --Assign the key
-        rawset(table.__mods, key, value)
+        rawset(tbl.__mods, key, value)
 
         if C.debug then
             local s = ""
@@ -91,19 +91,21 @@ function Player:init()
             else
                 s = "nil"
             end
-            ATM:print("Setting threat mods", key, s)
+            if self.currentEvent then
+                ATM:print(table.concat(self.currentEvent), "- threat mods", s)
+            end
         end
 
         --Nil out our cached modifier so it's recalculated next call
-        rawset(table, '__value', nil)
+        rawset(tbl, '__value', nil)
     end
-    local function ThreatModsIndex(table, key)
+    local function ThreatModsIndex(tbl, key)
         --Check for the cached value
-        local mul = rawget(table, '__value')
+        local mul = rawget(tbl, '__value')
 
         if not mul then
             mul = {}
-            for name,threat in pairs(table.__mods) do
+            for name,threat in pairs(tbl.__mods) do
                 for school,value in pairs(threat) do
                     local mask = 1
                     while mask <= school do
@@ -115,7 +117,7 @@ function Player:init()
                     end
                 end
             end
-            rawset(table, '__value', mul)
+            rawset(tbl, '__value', mul)
         end
 
         return mul[key] or 1.0
@@ -165,6 +167,7 @@ end
 
 
 function Player:update()
+    self.currentEvent = nil
     self:scanTalents()
     self:scanEquipment()
 end

@@ -458,10 +458,10 @@ function ATM:enemiesInCombat()
 	local k,e = nil,nil
 	return function()
 		while true do
-			k,e = next(self._enemies, k)
+			k,e = next(self._units, k)
 			if not k then
 				return
-			elseif e.isCombat then
+			elseif e.isNPC and e.isCombat then
 				return k, e
 			end
 		end
@@ -653,7 +653,9 @@ SLASH_ATM_SLASHCMD1 = '/atm'
 
 
 function ATM:EnableDebug()
-	print("[ATM] Debug mode enabled")
+	if not C.debug then
+		print("[ATM] Debug mode enabled")
+	end
 	C.debug = true
 
 	for i = 1, NUM_CHAT_WINDOWS do
@@ -679,6 +681,9 @@ end
 
 if C.debug then
 	ATM:EnableDebug()
+	C_Timer.After(1, function()
+		ATM:EnableDebug()
+	end)
 else
 	ATM.print = function() end
 end

@@ -8,6 +8,17 @@ local prototype = {
 prototype.color = "|c"..RAID_CLASS_COLORS[prototype.class].colorStr
 ATM.playerMixins[prototype.class] = prototype
 
+function prototype:init()
+    ATM.Player.init(self)
+
+    if self.unit then
+        local spellName = ATM.FindAuraByID(403789, self.unit, "HELPFUL")
+        if spellName then
+            self.threatMods[spellName] = {[127] = 1.5}
+        end
+    end
+end
+
 function prototype:scanTalents()
     -- ATM:print("WARLOCK:scanTalents")
 end
@@ -73,6 +84,21 @@ s[18265] = {isLeech=true,onDebuff=true,threat=60}
 s[18879] = {isLeech=true,onDebuff=true,threat=76}
 s[18880] = {isLeech=true,onDebuff=true,threat=96}
 s[18881] = {isLeech=true,onDebuff=true,threat=116}
+
+--Drain Life
+s[689]    = {isLeech=true,onDebuff=true}
+s[699]    = {isLeech=true,onDebuff=true}
+s[709]    = {isLeech=true,onDebuff=true}
+s[7651]   = {isLeech=true,onDebuff=true}
+s[11699]  = {isLeech=true,onDebuff=true}
+s[11700]  = {isLeech=true,onDebuff=true}
+
+s[403677] = {isLeech=true,onDebuff=true}
+s[403685] = {isLeech=true,onDebuff=true}
+s[403686] = {isLeech=true,onDebuff=true}
+s[403687] = {isLeech=true,onDebuff=true}
+s[403688] = {isLeech=true,onDebuff=true}
+s[403689] = {isLeech=true,onDebuff=true}
 
 --Drain Mana
 s[11704] = {ignored=true}
@@ -151,4 +177,16 @@ s[11689]  = {ignored=true}
 
     --[[ Season of Discovery ]]--
 --Metamorphosis
-s[403789] = {handler=ATM:BuffThreatMod({[127] = 1.5})}
+s[403789] = {onBuff=true,threat=1,handler=ATM:BuffThreatMod({[127] = 1.5})}
+
+--Shadow Cleave
+s[403835] = {threatMod=2.0}
+s[403839] = {threatMod=2.0}
+s[403840] = {threatMod=2.0}
+s[403841] = {threatMod=2.0}
+s[403842] = {threatMod=2.0}
+s[403843] = {threatMod=2.0}
+s[403844] = {threatMod=2.0}
+s[403848] = {threatMod=2.0}
+s[403851] = {threatMod=2.0}
+s[403852] = {threatMod=2.0}

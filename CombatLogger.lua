@@ -179,6 +179,7 @@ function CombatLogger:COMBAT_LOG_EVENT_UNFILTERED(...)
 	
 	local spellData = ATM.spells[spellID]
 	if spellData and spellData.ignored then return end
+	-- print(subevent, sourceName, destName, spellID, spellName)
 
 	-- Ignore hostile player targets
 	-- This will miss global threat edge cases like Dispel/Purge MC'd friendlies but API will save us :)
@@ -189,13 +190,13 @@ function CombatLogger:COMBAT_LOG_EVENT_UNFILTERED(...)
 		local unit = ATM:GetUnit(sourceGUID)
 		if not unit then return end
 
-		local spellData = ATM.spells[spellID]
-		if spellData and spellData.handler then
-			return spellData.handler(unit, ...)
-		end
-
 		if C.debug then
 			unit.currentEvent = {"[", unit.color, unit.name, "|r] ", tostring(spellName)}
+		end
+
+		local spellData = ATM.spells[spellID]
+		if spellData and spellData.handler then
+			spellData.handler(unit, ...)
 		end
 
 		local f = unit[subevent]

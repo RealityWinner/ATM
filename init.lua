@@ -41,3 +41,18 @@ function ATM.toTrue(tbl)
 	end
 	return out
 end
+
+
+local function SpellIDPredicate(auraIDToFind, _, _, ...)
+	return auraIDToFind == select(10, ...);
+end
+function ATM.FindAuraByID(spellID, unit, filter)
+	return AuraUtil.FindAura(SpellIDPredicate, unit, filter, spellID)
+end
+
+local function SpellIDsPredicate(auraIDToFind, _, _, ...)
+	return auraIDsToFind[select(10, ...)]
+end
+function ATM.FindAuraByIDs(spellIDs, unit, filter)
+	return AuraUtil.FindAura(SpellIDsPredicate, unit, filter, ATM.toTrue(spellIDs))
+end

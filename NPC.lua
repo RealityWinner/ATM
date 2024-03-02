@@ -13,6 +13,7 @@ local NPC = CreateFromMixins(ATM.Unit, {
     seenAPI = false,
     unit = nil,
     name = nil,
+    isNPC = true,
 })
 
 function NPC:getID()
@@ -137,16 +138,16 @@ end
 
 
 
-ATM._enemies = {}
-local function NPCIndex(table, key)
-    local enemy = ATM:newEnemy(key);
-    table[key] = enemy
-    return enemy
-end
-setmetatable(ATM._enemies, {
-    __index = NPCIndex,
-    __mode = "k", --weak
-});
+-- ATM._enemies = {}
+-- local function NPCIndex(table, key)
+--     local enemy = ATM:newEnemy(key);
+--     table[key] = enemy
+--     return enemy
+-- end
+-- setmetatable(ATM._enemies, {
+--     __index = NPCIndex,
+--     __mode = "k", --weak
+-- });
 
 -- function ATM:GetEnemy(enemyGUID, skipCreate)
 --     local enemy = rawget(self._enemies, enemyGUID)
@@ -169,9 +170,9 @@ function ATM:newEnemy(enemyGUID)
     return enemy
 end
 
-function ATM:enemies()
-    return self._enemies
-end
+-- function ATM:enemies()
+--     return self._enemies
+-- end
 
 
 --[[ TESTING ]]--
