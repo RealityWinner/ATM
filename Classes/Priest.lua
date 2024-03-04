@@ -2,11 +2,11 @@ if _G.WOW_PROJECT_ID ~= _G.WOW_PROJECT_CLASSIC then return end
 local ATM, C, L, _ = unpack(select(2, ...))
 local s = ATM.spells
 
-local prototype = {
+local prototype = CreateFromMixins(ATM.Player, {
     class = "PRIEST",
 
     shadowMod = 1,
-}
+})
 prototype.color = "|c"..RAID_CLASS_COLORS[prototype.class].colorStr
 ATM.playerMixins[prototype.class] = prototype
 
@@ -17,7 +17,6 @@ function prototype:scanTalents()
     local silentResolve = 1 - 0.4 * self:GetTalent(1, 3)
     if silentResolve < 1 then
         self.threatMods["Silent Resolve"] = { [98] = silentResolve } --Holy, Shadow, Arcane
-        rawset(self.threatMods, '__value', nil) --force update
     else
         self.threatMods["Silent Resolve"] = nil
     end

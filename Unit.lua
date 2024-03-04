@@ -26,7 +26,7 @@ function ATM:NewUnit(unitGUID)
             return nil
         end
 
-        unit = CreateFromMixins(ATM.Unit, ATM.Player, ATM.playerMixins[playerClass] or {})
+        unit = CreateFromMixins(ATM.playerMixins[playerClass] or {})
         unit:init()
         unit:setName(playerName)
         unit:setRace(playerRace)
@@ -37,7 +37,7 @@ function ATM:NewUnit(unitGUID)
         end
     end
     if tag == "Creature" or tag == "Vehicle" then
-        unit = CreateFromMixins(ATM.Unit, ATM.NPC, ATM.NPCs[tonumber(npcID)] or {})
+        unit = CreateFromMixins(ATM.NPC, ATM.NPCs[tonumber(npcID)] or {})
         unit:init()
         unit:setID(npcID)
         unit:setSubGUID(spawn_uid)
@@ -79,7 +79,71 @@ local Unit = {
 }
 ATM.Unit = Unit
 
+
+local function initThreatMods(self)
+    self.threatMods = {}
+    local function ThreatModsNewIndex(tbl, key, value)
+        --Assign the key
+        rawset(tbl.__mods, key, value)
+
+        if C.debug then
+            local s = ""
+            if value then
+                for k,v in pairs(value) do
+                    s = s..string.format("[%s] = %s, ", k, v)
+                end
+            else
+                s = "nil"
+            end
+            if self.currentEvent then
+                ATM:print(table.concat(self.currentEvent), "- threat mods", s)
+            end
+        end
+
+        --Nil out our cached modifier so it's recalculated next call
+        rawset(tbl, '__value', nil)
+    end
+    local function ThreatModsIndex(tbl, key)
+        --Check for the cached value
+        local mul = rawget(tbl, '__value')
+
+        if not mul then
+            mul = {}
+            for name,threat in pairs(tbl.__mods) do
+                for school,value in pairs(threat) do
+                    local mask = 1
+                    while mask <= school do
+                        local isMask = bit.band(mask, school) > 0
+                        if isMask then
+                            mul[mask] = (mul[mask] or 1.0) * value
+                        end
+                        mask = bit.lshift(mask, 1)
+                    end
+                end
+            end
+            rawset(tbl, '__value', mul)
+        end
+
+        return mul[key] or 1.0
+    end
+    self.threatMods.__mods = {}
+    setmetatable(self.threatMods, {
+        __newindex = ThreatModsNewIndex,
+        __index = ThreatModsIndex,
+        __mode = "k", --weak
+    });
+end
+
 function Unit:init()
+    -- ATM:print("Unit:init")
+    setmetatable(self, {
+        __index = function(tbl, key)
+            if key == "threatMods" then
+                initThreatMods(tbl)
+                return self.threatMods
+            end
+        end
+    })
 end
 
 
@@ -141,8 +205,6 @@ function Unit:SPELL_CAST_SUCCESS(...)
     local spellData = ATM.spells[spellID]
 	if not spellData or not spellData.onCast then return end
     
-    if self.isNPC then return end --TODO
-
     local threat = spellData.threat
     if type(threat) == "function" then
         threat = threat(self, ...)
@@ -150,7 +212,9 @@ function Unit:SPELL_CAST_SUCCESS(...)
     if not threat then return end
 
     local _, _, spellSchool, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _ = ...
-    threat = threat * self.threatMods[spellSchool]
+    if rawget(self, "threatMods") then
+        threat = threat * self.threatMods[spellSchool]
+    end
     if bit.band(destFlags, COMBATLOG_OBJECT_CONTROL_PLAYER) > 0 then
         self:addThreat(-threat)
     else
@@ -180,7 +244,9 @@ function Unit:SPELL_MISSED(...)
         if not threat then return end
     
         local _, _, spellSchool, sourceGUID, sourceName, sourceFlags, _, destGUID, destName, destFlags, _ = ...
-        threat = threat * self.threatMods[spellSchool]
+        if rawget(self, "threatMods") then
+            threat = threat * self.threatMods[spellSchool]
+        end
 
         local unit = ATM:GetUnit(destGUID)
         if unit and unit.isNPC then

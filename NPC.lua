@@ -125,4 +125,4 @@ end
 
 --[[ TESTING ]]--
 --Earthborer Acid
-ATM.spells[18070] = {onDebuff=true,handler=ATM.QuarterThreatDrop()}
+-- ATM.spells[18070] = {onDebuff=true,handler=ATM.QuarterThreatDrop()}

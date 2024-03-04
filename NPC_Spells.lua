@@ -19,6 +19,8 @@ s[11130] = {onDamage=true, threat=ATM.HalfThreatDrop}
 s[17307] = {onCast=true, threat=ATM.HalfThreatDrop}
 --Electrified Net
 s[11820] = {onCast=true, threat=ATM.HalfThreatDrop}
+--Net
+s[6533] = {onCast=true, threat=ATM.HalfThreatDrop}
 
 
 

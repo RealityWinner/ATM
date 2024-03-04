@@ -2,18 +2,18 @@ if _G.WOW_PROJECT_ID ~= _G.WOW_PROJECT_CLASSIC then return end
 local ATM, C, L, _ = unpack(select(2, ...))
 local s = ATM.spells
 
-local prototype = {
+local prototype = CreateFromMixins(ATM.Player, {
     class = "WARRIOR",
 
     defianceMod = 1.0,
     mightCount = 0,
-}
+})
 prototype.color = "|c"..RAID_CLASS_COLORS[prototype.class].colorStr
 ATM.playerMixins[prototype.class] = prototype
 
 function prototype:scanTalents()
     -- ATM:print("WARRIOR:scanTalents")
-    local newDefiance = 1 + (0.03 * self:GetTalent(3, 9))
+    local newDefiance = 1 + (0.03 * self:GetTalent(3, 6))
     if newDefiance ~= self.defianceMod then self.talentsTime = GetServerTime(); ATM:TransmitSelf() end
     self.defianceMod = newDefiance
 
@@ -132,11 +132,11 @@ s[7887]  = {threatMod=0.75}
 s[7384]  = {threatMod=0.75}
 
 --Sunder Armor
-s[11597] = {onCast=true,threatMod=prototype.eightSetMight,threat=4.5 * 58}
-s[11596] = {onCast=true,threatMod=prototype.eightSetMight,threat=4.5 * 46}
-s[8380]  = {onCast=true,threatMod=prototype.eightSetMight,threat=4.5 * 34}
-s[7405]  = {onCast=true,threatMod=prototype.eightSetMight,threat=4.5 * 22}
-s[7386]  = {onCast=true,threatMod=prototype.eightSetMight,threat=4.5 * 10}
+s[11597] = {onDebuff=true,threatMod=prototype.eightSetMight,threat=4.5 * 58}
+s[11596] = {onDebuff=true,threatMod=prototype.eightSetMight,threat=4.5 * 46}
+s[8380]  = {onDebuff=true,threatMod=prototype.eightSetMight,threat=4.5 * 34}
+s[7405]  = {onDebuff=true,threatMod=prototype.eightSetMight,threat=4.5 * 22}
+s[7386]  = {onDebuff=true,threatMod=prototype.eightSetMight,threat=4.5 * 10}
 
 --Heroic Strike
 s[25286] = {onDamage=true,threat=175}

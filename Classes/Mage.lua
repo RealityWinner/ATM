@@ -2,9 +2,9 @@ if _G.WOW_PROJECT_ID ~= _G.WOW_PROJECT_CLASSIC then return end
 local ATM, C, L, _ = unpack(select(2, ...))
 local s = ATM.spells
 
-local prototype = {
+local prototype = CreateFromMixins(ATM.Player, {
     class = "MAGE",
-}
+})
 prototype.color = "|c"..RAID_CLASS_COLORS[prototype.class].colorStr
 ATM.playerMixins[prototype.class] = prototype
 
@@ -17,7 +17,6 @@ function prototype:scanTalents()
     self.threatMods["Frost Channeling"] = {[16] = 1 - 0.1 * self:GetTalent(3, 12)}
     --Burning Soul
     self.threatMods["Burning Soul"] = {[4]  = 1 - 0.15 * self:GetTalent(2, 9)}
-    rawset(self.threatMods, '__value', nil) --force update
 end
 
 --Clearcasting

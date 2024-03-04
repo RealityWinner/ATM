@@ -2,12 +2,12 @@ if _G.WOW_PROJECT_ID ~= _G.WOW_PROJECT_CLASSIC then return end
 local ATM, C, L, _ = unpack(select(2, ...))
 local s = ATM.spells
 
-local prototype = {
+local prototype = CreateFromMixins(ATM.Player, {
     class = "SHAMAN",
     
     enhancingTotems = 1.0,
     rockbiter = 0,
-}
+})
 prototype.color = "|c"..RAID_CLASS_COLORS[prototype.class].colorStr
 ATM.playerMixins[prototype.class] = prototype
 
@@ -108,15 +108,12 @@ function prototype:SWING_DAMAGE(...)
 end
 
 function prototype:UNIT_AURA()
-    for i=1,999 do
-        local name, icon, count, debuffType, duration, expirationTime, source, isStealable, nameplateShowPersonal, spellID = UnitBuff("player", i)
-        if not spellID then break end
-        if spellID == 408680 then
-            self.threatMods["Way of Earth"] = {[127] = 1.5}
-            return
-        end
+    if not self.unit then return end
+    if ATM.FindAuraByID(408680, self.unit, "HELPFUL") then
+        self.threatMods["Way of Earth"] = {[127] = 1.5}
+    else
+        self.threatMods["Way of Earth"] = nil
     end
-    self.threatMods["Way of Earth"] = nil
 end
 
 prototype.classFields = ATM.toTrue({

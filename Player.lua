@@ -1,133 +1,19 @@
 if _G.WOW_PROJECT_ID ~= _G.WOW_PROJECT_CLASSIC then return end
 local ATM, C, L, _ = unpack(select(2, ...))
 
-
-
-
-
-
-
--- ATM._players = {}
--- local function PlayersIndex(table, key)
---     local player = ATM:newPlayer(key);
---     if player then
---         table[key] = player
---     end
---     return player
--- end
--- setmetatable(ATM._players, {
---     __index = PlayersIndex,
---     __mode = "k", --weak
--- });
-
--- function ATM:GetPlayer(playerGUID, skipCreate)
---     if not playerGUID then return end
---     -- self:print("ATM:GetPlayer", playerGUID)
-
---     local player = rawget(self._players, playerGUID)
---     if player or skipCreate then return player end
-
---     if ATM.starts_with(playerGUID, "Player-") then
---         return self._players[playerGUID]
---     end
--- end
-
-function ATM:newPlayer(playerGUID)
-    local _, playerClass, _, playerRace, gender, playerName, server = GetPlayerInfoByGUID(playerGUID)
-    self:print("[+player]", playerGUID, playerClass, playerName)
-
-    if not self._player and self.me == playerGUID then
-        playerClass = ({UnitClass("player")})[2]
-        playerName = UnitName("player")
-    end
-
-    if not playerClass then
-        ATM:print("[ATM] FAIL PLAYER CLASS", playerGUID, playerClass, playerName)
-        -- This fails for enemy players, players not yet loaded, or players too far away
-        return nil
-    end
-
-    local player = CreateFromMixins(ATM.Player, self.playerMixins[playerClass] or {})
-    player:init()
-    player:setGUID(playerGUID)
-    player:setName(playerName)
-    player:setRace(playerRace)
-    player:setGender(gender)
-    player:setServer(server)
-    if playerGUID == self.me then
-        player:scanTalents()
-    end
-    return player
-end
-
-
-
 local Player = CreateFromMixins(ATM.Unit, {
     color = "",
     inCombat = false,
     _isLocal = false,
     _equipment = {},
     _talents = {},
+    globalThreat = {},
+    globalThreatMod = {},
 })
 
-
 function Player:init()
-    self._talents = {}
-    self._equipment = {}
-    self.globalThreat = {}
-    self.globalThreatMod = {}
-
-    self.threatMods = {}
-    local function ThreatModsNewIndex(tbl, key, value)
-        --Assign the key
-        rawset(tbl.__mods, key, value)
-
-        if C.debug then
-            local s = ""
-            if value then
-                for k,v in pairs(value) do
-                    s = s..string.format("[%s] = %s, ", k, v)
-                end
-            else
-                s = "nil"
-            end
-            if self.currentEvent then
-                ATM:print(table.concat(self.currentEvent), "- threat mods", s)
-            end
-        end
-
-        --Nil out our cached modifier so it's recalculated next call
-        rawset(tbl, '__value', nil)
-    end
-    local function ThreatModsIndex(tbl, key)
-        --Check for the cached value
-        local mul = rawget(tbl, '__value')
-
-        if not mul then
-            mul = {}
-            for name,threat in pairs(tbl.__mods) do
-                for school,value in pairs(threat) do
-                    local mask = 1
-                    while mask <= school do
-                        local isMask = bit.band(mask, school) > 0
-                        if isMask then
-                            mul[mask] = (mul[mask] or 1.0) * value
-                        end
-                        mask = bit.lshift(mask, 1)
-                    end
-                end
-            end
-            rawset(tbl, '__value', mul)
-        end
-
-        return mul[key] or 1.0
-    end
-    self.threatMods.__mods = {}
-    setmetatable(self.threatMods, {
-        __newindex = ThreatModsNewIndex,
-        __index = ThreatModsIndex,
-        __mode = "k", --weak
-    });
+    -- ATM:print("Player:init")
+    ATM.Unit.init(self)
 end
 
 function Player:setName(name)
@@ -199,13 +85,13 @@ function Player:scanEquipment()
 
     if self._equipment[15] and self._equipment[15][2] == 2621 then
         self.threatMods["Cloak - Subtlety"] = {[127] = 0.98}
-    else
+    elseif rawget(self, "threatMods") then
         self.threatMods["Cloak - Subtlety"] = nil
     end
 
     if self._equipment[10] and self._equipment[10][2] == 2613 then
         self.threatMods["Gloves - Threat"] = {[127] = 1.02}
-    else
+    elseif rawget(self, "threatMods") then
         self.threatMods["Gloves - Threat"] = nil
     end
 end
@@ -456,9 +342,14 @@ function Player:SWING_DAMAGE(...)
 	local amount = select(12, ...)
 
     if C.debug then
-        ATM.insert(self.currentEvent, " R:", tostring(amount), " M:", tostring(self.threatMods[1]))
+        ATM.insert(self.currentEvent, " R:", tostring(amount))
     end
-    amount = amount * self.threatMods[1]
+    if rawget(self, "threatMods") then
+        amount = amount * self.threatMods[1]
+        if C.debug then
+            ATM.insert(self.currentEvent, " M:", tostring(self.threatMods[1]))
+        end
+    end
 
     self:setCombat(true)
     local enemy = ATM:GetUnit(destGUID)
@@ -473,9 +364,14 @@ function Player:RANGE_DAMAGE(...)
 	local amount = select(15, ...)
     
     if C.debug then
-        ATM.insert(self.currentEvent, " R:", tostring(amount), " M:", tostring(self.threatMods[1]))
+        ATM.insert(self.currentEvent, " R:", tostring(amount))
     end
-    amount = amount * self.threatMods[1]
+    if rawget(self, "threatMods") then
+        amount = amount * self.threatMods[1]
+        if C.debug then
+            ATM.insert(self.currentEvent, " M:", tostring(self.threatMods[1]))
+        end
+    end
     
     self:setCombat(true)
     local enemy = ATM:GetUnit(destGUID)
@@ -496,10 +392,6 @@ function Player:SPELL_DAMAGE(...)
     local threat = amount
     local spellData = ATM.spells[spellID]
     if spellData then
-        if spellData.onDamage and spellData.threat then
-            threat = threat + spellData.threat
-        end
-
         local t = type(spellData.threatMod)
         if t == "number" then
             threat = threat * spellData.threatMod
@@ -512,12 +404,18 @@ function Player:SPELL_DAMAGE(...)
                 ATM.insert(self.currentEvent, " S:", tostring(spellData.threatMod(self)))
             end
         end
+
+        if spellData.onDamage and spellData.threat then
+            threat = threat + spellData.threat
+        end
     end
     
-    local schoolThreatMod = self.threatMods[spellSchool]
-    threat = threat * schoolThreatMod
-    if C.debug and schoolThreatMod ~= 1.0 then
-        ATM.insert(self.currentEvent, " M:", tostring(schoolThreatMod))
+    if rawget(self, "threatMods") then
+        local schoolThreatMod = self.threatMods[spellSchool]
+        threat = threat * schoolThreatMod
+        if C.debug and schoolThreatMod ~= 1.0 then
+            ATM.insert(self.currentEvent, " M:", tostring(schoolThreatMod))
+        end
     end
     
 
@@ -566,10 +464,12 @@ function Player:SPELL_HEAL(...)
         end
     end
 
-    local schoolThreatMod = self.threatMods[spellSchool]
-    threat = threat * schoolThreatMod
-    if C.debug and schoolThreatMod ~= 1.0 then
-        ATM.insert(self.currentEvent, " M:", tostring(schoolThreatMod))
+    if rawget(self, "threatMods") then
+        local schoolThreatMod = self.threatMods[spellSchool]
+        threat = threat * schoolThreatMod
+        if C.debug and schoolThreatMod ~= 1.0 then
+            ATM.insert(self.currentEvent, " M:", tostring(schoolThreatMod))
+        end
     end
 
 
@@ -592,11 +492,10 @@ function Player:SPELL_ENERGIZE(...)
     if powerType == ATM.PowerType.Mana then
         self:addThreat(amount * 0.5)
     elseif powerType == ATM.PowerType.Rage then
-        if spellID == 29131 then --bloodrage ticks
-            self:addThreat(amount * 5.0 * self.threatMods[spellSchool])
-        else
-            self:addThreat(amount * 5.0)
+        if spellID == 29131 and rawget(self, "threatMods") then --bloodrage ticks
+            amount = amount * self.threatMods[spellSchool]
         end
+        self:addThreat(amount * 5.0)
     elseif powerType == ATM.PowerType.Energy then
         self:addThreat(amount * 5.0)
     end
@@ -608,17 +507,17 @@ function Player:AURA_THREAT(...)
 	local timestamp, subevent, _, sourceGUID, sourceName, sourceFlags, sourceRaidFlags, destGUID, destName, destFlags, destRaidFlags = ...
     local spellID, spellName, spellSchool, auraType, amount = select(12, ...)
     local spellData = ATM.spells[spellID]
-    local enemy = ATM:GetUnit(destGUID)
+    local destUnit = ATM:GetUnit(destGUID)
 
     --Set CC; CC'd enemies ignore global threat
-    if enemy and spellData and spellData.isCC then
-        enemy:setCC(spellName, true)
+    if destUnit and spellData and spellData.isCC then
+        destUnit:setCC(spellName, true)
     end
 
     --Ability generates no threat, return and don't set +combat
     if spellData and spellData.ignored then return end
-    if enemy and auraType == "DEBUFF" then
-        enemy:setCombat(true)
+    if destUnit and auraType == "DEBUFF" then
+        destUnit:setCombat(true)
     end
 
     --No threat data, return
@@ -640,18 +539,18 @@ function Player:AURA_THREAT(...)
         end
     end
 
-    local schoolThreatMod = self.threatMods[spellSchool]
-    threat = threat * schoolThreatMod
-    if C.debug and schoolThreatMod ~= 1.0 then
-        ATM.insert(self.currentEvent, " M:", tostring(schoolThreatMod))
+    if rawget(self, "threatMods") then
+        local schoolThreatMod = self.threatMods[spellSchool]
+        threat = threat * schoolThreatMod
+        if C.debug and schoolThreatMod ~= 1.0 then
+            ATM.insert(self.currentEvent, " M:", tostring(schoolThreatMod))
+        end
     end
 
 
     if auraType == "BUFF" then
-        if bit.band(destFlags, COMBATLOG_OBJECT_TYPE_PLAYER) > 0 then
-            if not self:getCombat() and ATM:GetUnit(destGUID):getCombat() then
-                self:setCombat(true)
-            end
+        if destUnit:getCombat() then
+            self:setCombat(true)
         end
         self:addThreat(threat)
     elseif auraType == "DEBUFF" then

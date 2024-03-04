@@ -178,7 +178,7 @@ function CombatLogger:COMBAT_LOG_EVENT_UNFILTERED(...)
 
 	
 	local spellData = ATM.spells[spellID]
-	if spellData and spellData.ignored then return end
+	-- if spellData and spellData.ignored then return end
 	-- print(subevent, sourceName, destName, spellID, spellName)
 
 	-- Ignore hostile player targets

@@ -2,16 +2,17 @@ if _G.WOW_PROJECT_ID ~= _G.WOW_PROJECT_CLASSIC then return end
 local ATM, C, L, _ = unpack(select(2, ...))
 local s = ATM.spells
 
-local prototype = {
+local prototype = CreateFromMixins(ATM.Player, {
     class = "WARLOCK",
-}
+})
 prototype.color = "|c"..RAID_CLASS_COLORS[prototype.class].colorStr
 ATM.playerMixins[prototype.class] = prototype
 
 function prototype:init()
+    -- ATM:print("Warlock:init")
     ATM.Player.init(self)
 
-    if self.unit then
+    if self.unit then --Metamorphosis
         local spellName = ATM.FindAuraByID(403789, self.unit, "HELPFUL")
         if spellName then
             self.threatMods[spellName] = {[127] = 1.5}
